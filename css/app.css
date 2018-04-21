@@ -1,0 +1,205 @@
+html, body {
+  /* background-color: #F0FBF7; */
+  background-color: #FFFFFF;
+}
+
+.menu {
+  /* background-color: rgba(121, 203, 201, 0.57); */
+  background-color: rgba(33, 150, 243, 0.45);
+}
+.menu>li>a {
+  font-weight: 600;
+  font-size: 22px;
+}
+.menu>.mui--is-active {
+  border-bottom: none !important;
+}
+.menu>.mui--is-active>a {
+  color: #3aa949 !important;
+}
+
+::placeholder {
+  font-weight: 600;
+  font-size: 22px;
+}
+
+:placeholder-shown {
+  font-weight: 600;
+  font-size: 22px;
+}
+.list>.mui-panel {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+/**
+ * MUI Checkbox and Radio Components
+ */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-radio {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.mui-radio input,
+.mui-checkbox input {
+  display: none;
+}
+
+.mui-radio > label,
+.mui-checkbox > label {
+  position: relative;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 2px solid #666;
+  margin-bottom: 0;
+  font-weight: normal;
+  white-space: nowrap;
+  text-indent: 20px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 400ms;
+}
+
+.mui-checkbox input[type=checkbox]:disabled+label {
+  border: 2px solid #999;
+}
+
+.mui-checkbox input[type=checkbox]:checked+label {
+  background-color: #63c000;
+  border-color: #63c000;
+}
+
+.mui-checkbox input[type=checkbox]:checked + label::after,
+.mui-checkbox input[type=checkbox]:checked + label::before {
+  position: absolute;
+  display: table;
+  box-sizing: border-box;
+  content: '';
+}
+
+.mui-checkbox input[type=checkbox]:checked + label::before {
+  top: -15px;
+  right: -15px;
+  width: 50px;
+  height: 50px;
+  border-color: #fff;
+  background-color: #63c000;
+  border-radius: 35px;
+  opacity: 0;
+  animation: ripple 800ms;
+}
+
+.mui-checkbox input[type=checkbox]:checked + label::after {
+  top: 2px;
+  right: 7px;
+  width: 6px;
+  height: 13px;
+  box-sizing: border-box;
+  border: 2px solid #fff;
+  border-top-width: 0;
+  border-left-width: 0;
+  transform: rotate(45deg);
+}
+
+.mui-radio > label {
+  border-radius: 12px;
+}
+
+.mui-radio input[type=radio]:disabled+label {
+  border-color: #999;
+}
+
+.mui-radio input[type=radio]:checked+label {
+  border-color: #63c000;
+}
+
+.mui-radio input[type=radio]:checked + label::before,
+.mui-radio input[type=radio]:checked + label::after {
+  position: absolute;
+  display: table;
+  box-sizing: border-box;
+  border-color: #fff;
+  background-color: #63c000;
+  border-radius: 35px;
+  content: '';
+}
+
+.mui-radio input[type=radio]:checked + label::before {
+  top: -15px;
+  right: -15px;
+  width: 50px;
+  height: 50px;
+  opacity: 0;
+  animation: ripple 800ms;
+}
+
+.mui-radio input[type=radio]:checked + label::after {
+  top: 3px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  opacity: 1;
+  animation: ripple-radio 400ms;
+}
+
+.mui-radio > label > input[type="radio"],
+.mui-radio--inline > label > input[type="radio"],
+.mui-checkbox > label > input[type="checkbox"],
+.mui-checkbox--inline > label > input[type="checkbox"] {
+  position: absolute;
+  margin-top: 4px;
+  margin-right: -20px;
+}
+
+.mui-radio + .mui-radio,
+.mui-checkbox + .mui-checkbox {
+  margin-top: -5px;
+}
+
+.mui-radio--inline,
+.mui-checkbox--inline {
+  display: inline-block;
+  padding-right: 20px;
+  margin-bottom: 0;
+  vertical-align: middle;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.mui-radio--inline > input[type="radio"],
+.mui-radio--inline > input[type="checkbox"],
+.mui-radio--inline > label > input[type="radio"],
+.mui-radio--inline > label > input[type="checkbox"],
+.mui-checkbox--inline > input[type="radio"],
+.mui-checkbox--inline > input[type="checkbox"],
+.mui-checkbox--inline > label > input[type="radio"],
+.mui-checkbox--inline > label > input[type="checkbox"] {
+  margin: 4px 0 0;
+  line-height: normal;
+}
+
+.mui-radio--inline + .mui-radio--inline,
+.mui-checkbox--inline + .mui-checkbox--inline {
+  margin-top: 0;
+  margin-right: 10px;
+}

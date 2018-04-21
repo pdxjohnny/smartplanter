@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Smart Planter</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <!-- BEGIN Icons -->
+    <link rel="apple-touch-icon" sizes="76x76" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="manifest" href="icons/site.webmanifest">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="icons/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="Smart Planter">
+    <meta name="application-name" content="Smart Planter">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="icons/browserconfig.xml">
+    <meta name="theme-color" content="#91B4B7">
+    <!-- END Icons -->
+    <!-- BEGIN Deps -->
+    <link href="libs/css/mui.min.css" rel="stylesheet" type="text/css" />
+    <script src="libs/js/mui.min.js"></script>
+    <script src="libs/js/upup.min.js"></script>
+    <script src="libs/tl/js/core.js"></script>
+    <script src="libs/tl/js/ui.js"></script>
+    <link href="libs/tl/css/loading.css" rel="stylesheet" type="text/css" />
+    <!-- END Deps -->
+    <!-- BEGIN Smart Planter -->
+    <script src="js/index.js"></script>
+    <script src="js/planter.js"></script>
+    <script src="js/postsync.js"></script>
+    <!-- END Smart Planter -->
+    <link href="css/app.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <noscript>
+      Oh No! Please enable JavaScript to access your smart planters.
+    </noscript>
+    <div id="notify" style="display: none;" class="mui-panel"></div>
+    <div id="app" class="background">
+    </div>
+    <div id="mainview" style="display: none;">
+      <ul id="mainviewmenu" class="mui-tabs__bar mui-tabs__bar--justified menu">
+        <li>
+          <a data-mui-toggle="tab"
+            data-mui-controls="planters">&#x1f331;</a>
+        </li>
+      </ul>
+      <div id="notify" style="display: none;" class="mui-panel"></div>
+      <div id="planters" class="mui-tabs__pane mui--is-active">
+        <div class="mui-container-fluid">
+          <div id="planter_list" class="mui-row list"></div>
+        </div>
+        <div class="mui--align-bottom">
+          <button id="planter_add" style="font-size: 22px; opacity: 0.7; position: absolute;
+                  bottom: 0.5em; left: 42%;"
+              class="mui-btn mui-btn--large mui-btn--fab mui-btn--primary">
+            +
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

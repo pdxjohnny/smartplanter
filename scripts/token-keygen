@@ -1,0 +1,20 @@
+#!/bin/bash
+
+KEYDIR="keys"
+
+DIR="token"
+if [ "$#" == "1" ]; then
+  DIR=$1
+fi
+DIRPATH="${KEYDIR}/${DIR}"
+rm -rf ${DIRPATH}
+mkdir -pv ${DIRPATH}
+openssl \
+  genrsa \
+  -out ${DIRPATH}/private.pem \
+  1024
+openssl \
+  rsa \
+  -in ${DIRPATH}/private.pem \
+  -pubout \
+  -out ${DIRPATH}/public.pem
