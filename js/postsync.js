@@ -1,34 +1,20 @@
 class PostSync extends Sync {
   constructor(sync, name, pre, post, relay, meta, value) {
     super(sync, name, pre, post, relay, meta, value);
+    this.api = new SmartPlanterAPI(this.value);
     this.token = new Resource(this.sync, this.value + 'postsync.token', 'postsync.token');
     this.id = new Resource(this.sync, this.value + 'postsync.id', 'postsync.id');
     this.password = new Resource(this.sync, this.value + 'postsync.password', 'postsync.password');
   }
   register(resource) {
-    var array = new Uint32Array(50);
-    window.crypto.getRandomValues(array);
-    var password = btoa(array);
-    console.warn('Registration password', password);
-    return this.password.update(password)
-    .then(function() {
-      return fetch(this.value + '/createuser/?password=' + password);
-    }.bind(this))
-    .then(function(response) {
-      return response.json();
-    }.bind(this))
+    return this.api.createuser()
     .then(function(userdata) {
-      if (typeof userdata['id'] === 'undefined') {
-        throw new Error('No id in register response {0}'.format(
-              JSON.stringify(userdata)));
-      }
-      if (typeof userdata['token'] === 'undefined') {
-        throw new Error('No token in register response {0}'.format(
-              JSON.stringify(userdata)));
-      }
       return this.id.update(userdata.id)
       .then(function() {
         return this.token.update(userdata.token);
+      }.bind(this))
+      .then(function() {
+        return this.password.update(userdata.password)
       }.bind(this));
     }.bind(this));
   }
@@ -38,16 +24,9 @@ class PostSync extends Sync {
       return this.password.queryPrimary();
     }.bind(this))
     .then(function() {
-      return fetch(this.value + '/login/?id={0}&password={1}'.format(
-          this.id.value, this.password.value))
-    }.bind(this))
-    .then(function(response) {
-      return response.json();
+      return this.api.login(this.id.value, this.password.value)
     }.bind(this))
     .then(function(userdata) {
-      if (typeof userdata['token'] === 'undefined') {
-        throw new Error('No token in login response {0}'.format(userdata));
-      }
       this.token.update(userdata.token);
       return userdata;
     }.bind(this));
@@ -104,26 +83,7 @@ class PostSync extends Sync {
   }
   _get(resource) {
     // console.log('PostSync.get', resource.name, resource.meta, this.token.value);
-    if (typeof resource.meta[this.value + '.id'] === 'undefined') {
-      return Promise.resolve(null);
-    }
-    return fetch(this.value + '/sync/?resource=' +
-        resource.meta[this.value + '.id'], {
-      headers: {
-        'Authorization': 'Bearer ' + this.token.value
-      }
-    })
-    .then(function(response) {
-      return response.text()
-      .then(function(text) {
-        try {
-          return JSON.parse(text);
-        } catch (err) {
-          throw new Error(text);
-        }
-      }.bind(this))
-      return response.json();
-    }.bind(this))
+    return this.api.get(this.token.value, resource.meta[this.value + '.id']);
   }
   _set(resource, preprocessed) {
     var meta = JSON.parse(JSON.stringify(resource.meta));
@@ -136,36 +96,8 @@ class PostSync extends Sync {
   }
   _do_set(resource, meta, preprocessed) {
     return function() {
-      var method = 'PUT';
-      var url = this.value + 'sync/';
-      if (typeof meta[this.value + '.id'] === 'undefined') {
-        method = 'POST';
-      } else {
-        url += '?resource=' + meta[this.value + '.id'];
-      }
-      return fetch(url, {
-        headers: {
-          'Authorization': 'Bearer ' + this.token.value
-        },
-        method: method,
-        body: preprocessed,
-      })
-      .then(function(response) {
-        return response.text()
-        .then(function(text) {
-          try {
-            if (method === 'POST') {
-              console.warn('PostSync set', resource.name, method, 'response:', text);
-            } else {
-              console.log('PostSync set', resource.name, method, 'response:', text);
-            }
-            return JSON.parse(text);
-          } catch (err) {
-            throw new Error(text);
-          }
-        }.bind(this))
-        return resource;
-      }.bind(this))
+      return this.api.set(this.token.value, meta[this.value + '.id'],
+          preprocessed)
       .then(function(response) {
         resource.meta = Object.assign(meta, resource.meta);
         if (typeof response['id'] !== 'undefined') {
