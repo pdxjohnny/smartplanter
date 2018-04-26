@@ -26,9 +26,19 @@ class Auth
             ->setAudience($this->origin())
             ->setId($user['id'] . "_" . time(), true)
             ->setIssuedAt(time())
-            ->setNotBefore(time() + 60)
-            ->setExpiration(time() + 3600)
             ->set('uid', $user['id'])
+            ->sign($this->signer,  $this->privateKey)
+            ->getToken();
+        return $token->__toString();
+    }
+
+    public function create_planter_token($user_id, $planter_id) {
+        $token = (new Lcobucci\JWT\Builder())->setIssuer($this->origin())
+            ->setAudience($this->origin())
+            ->setId($user_id . "_" . time(), true)
+            ->setIssuedAt(time())
+            ->set('uid', $user_id)
+            ->set('pid', $planter_id)
             ->sign($this->signer,  $this->privateKey)
             ->getToken();
         return $token->__toString();

@@ -89,6 +89,19 @@ class Database
         return true;
     }
 
+    public function create_planter($user_id, $data) {
+        $statement = $this->db->prepare("INSERT INTO RESOURCES(user_id,data) VALUES(:user_id,:data)");
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $statement->bindValue(':data', $data, PDO::PARAM_LOB);
+        $statement->execute();
+        $planter_id = intval($this->db->lastInsertId());
+        $planter = array(
+          'id' => $planter_id,
+          'token' => $this->auth->create_planter_token($user_id, $planter_id)
+        );
+        return $planter;
+    }
+
     public function award_resources($resources) {
         if ($resources == NULL) {
             return new Bounty;
@@ -237,7 +250,7 @@ class Database
             return false;
         }
         // Hash the password
-        $hash_options = array('cost' => 11);
+        $hash_options = array('cost' => 16);
         $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT, $hash_options);
         if (
           isset($user['email']) &&

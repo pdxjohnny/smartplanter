@@ -6,7 +6,8 @@ class SmartPlanter extends App {
         [this.localstorage], {}, location.href + 'api/'));
   }
   DOMLoaded() {
-    this.loading = new Loading(this, 'Welcome');
+    this.loading = new Loading(this, 'Loading...');
+    this.mainview(this.loading);
     this.MainView = {
       name: 'mainview',
       element: document.getElementById('mainview')

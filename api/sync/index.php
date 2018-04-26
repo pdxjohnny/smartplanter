@@ -4,14 +4,6 @@ require_once('../lib/all.php');
 header('Content-Type: application/json');
 
 $protect = new ProtectWithAuth;
-if (!$protect->logged_in()) {
-  $err = new ErrorResponse;
-  $err->code = 403;
-  $err->message = "Invalid token";
-  $err->render();
-  return;
-}
-
 $user = $protect->user_data();
 if ($user == false) {
   $err = new ErrorResponse;
@@ -26,6 +18,9 @@ if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
   $resource = client_input(array(
     'resource' => FILTER_SANITIZE_STRING,
   ));
+  if ($user->hasClaim('pid')) {
+    $resource['resource'] = $user->getClaim('pid');
+  }
   if ($resource['resource'] == NULL) {
     $err = new ErrorResponse;
     $err->code = 404;
@@ -44,6 +39,9 @@ if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
   $resource = client_input(array(
     'resource' => FILTER_SANITIZE_STRING,
   ));
+  if ($user->hasClaim('pid')) {
+    $resource['resource'] = $user->getClaim('pid');
+  }
   if ($resource['resource'] == NULL) {
     $err = new ErrorResponse;
     $err->code = 404;
