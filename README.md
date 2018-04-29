@@ -43,19 +43,52 @@ curl 'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/login/?id=42&password=test
 # export TOKEN=`result of token in the above JSON reponse`
 ```
 
-### Set Resource
+### Create Resource
 
 ```console
 curl -H "Authorization: Bearer $TOKEN" \
   -d 'Hello World'
-  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/?resource=test'
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/'
+```
+
+### Update Resource
+
+```console
+curl -X PUT \
+  -H "Authorization: Bearer $TOKEN" \
+  -d 'Hello World'
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/?resource=<created ID>'
 ```
 
 ### Get Resource
 
 ```console
 curl -H "Authorization: Bearer $TOKEN" \
-  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/?resource=test'
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/?resource=<created ID>'
 ```
 
 You should see `Hello World`
+
+### Create Planter
+
+```console
+curl -H "Authorization: Bearer $TOKEN" \
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/createplanter/'
+# export PTOKEN=`result of token in the above JSON reponse`
+```
+
+### Update Planter
+
+```console
+curl -X PUT \
+  -H "Authorization: Bearer $PTOKEN" \
+  -d 'Hello World'
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/'
+```
+
+### Get Planter
+
+```console
+curl -H "Authorization: Bearer $PTOKEN" \
+  'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/'
+```
