@@ -1,6 +1,7 @@
 class SmartPlanterAPI {
   constructor(endpoint) {
     this.endpoint = endpoint;
+    this.token = undefined;
   }
   createuser() {
     var array = new Uint32Array(50);
@@ -30,6 +31,34 @@ class SmartPlanterAPI {
       return userdata;
     }.bind(this));
   }
+  createplanter() {
+    return fetch(this.endpoint + '/createplanter/', {
+      headers: {
+        'Authorization': 'Bearer ' + this.token
+      }
+    })
+    .then(function(response) {
+      return response.text()
+      .then(function(text) {
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          throw new Error(text);
+        }
+      }.bind(this))
+    }.bind(this))
+    .then(function(data) {
+      if (typeof data['id'] === 'undefined') {
+        throw new Error('No id in createplanter response {0}'.format(
+              JSON.stringify(data)));
+      }
+      if (typeof data['token'] === 'undefined') {
+        throw new Error('No token in createplanter response {0}'.format(
+              JSON.stringify(data)));
+      }
+      return data;
+    }.bind(this));
+  }
   login(userID, password) {
     return fetch(this.endpoint + '/login/?id={0}&password={1}'.format(
           userID, password))
@@ -50,13 +79,13 @@ class SmartPlanterAPI {
       return userdata;
     }.bind(this));
   }
-  get(token, resourceID) {
+  get(resourceID) {
     if (typeof resourceID === 'undefined') {
       return Promise.resolve(null);
     }
     return fetch(this.endpoint + '/sync/?resource=' + resourceID, {
       headers: {
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + this.token
       }
     })
     .then(function(response) {
@@ -70,7 +99,7 @@ class SmartPlanterAPI {
       }.bind(this))
     }.bind(this))
   }
-  set(token, resourceID, data) {
+  set(resourceID, data) {
     var method = 'PUT';
     var url = this.endpoint + 'sync/';
     if (typeof resourceID === 'undefined') {
@@ -80,7 +109,7 @@ class SmartPlanterAPI {
     }
     return fetch(url, {
       headers: {
-        'Authorization': 'Bearer ' + token
+        'Authorization': 'Bearer ' + this.token
       },
       method: method,
       body: data,

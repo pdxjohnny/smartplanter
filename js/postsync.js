@@ -61,6 +61,7 @@ class PostSync extends Sync {
   token_loaded() {
     const finish = function(res) {
       console.log('this.token.value', this.token.value);
+      this.api.token = this.token.value;
       return Promise.resolve(res);
     }.bind(this);
     if (this.token.value === undefined) {
@@ -83,7 +84,7 @@ class PostSync extends Sync {
   }
   _get(resource) {
     // console.log('PostSync.get', resource.name, resource.meta, this.token.value);
-    return this.api.get(this.token.value, resource.meta[this.value + '.id']);
+    return this.api.get(resource.meta[this.value + '.id']);
   }
   _set(resource, preprocessed) {
     var meta = JSON.parse(JSON.stringify(resource.meta));
@@ -96,7 +97,7 @@ class PostSync extends Sync {
   }
   _do_set(resource, meta, preprocessed) {
     return function() {
-      return this.api.set(this.token.value, meta[this.value + '.id'],
+      return this.api.set(meta[this.value + '.id'],
           preprocessed)
       .then(function(response) {
         resource.meta = Object.assign(meta, resource.meta);

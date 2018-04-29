@@ -14,11 +14,7 @@ if ($user == false) {
 }
 
 $database = new Database;
-$resource = array();
-if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'POST')) {
-  $resource = $database->create_planter($user->getClaim('uid'),
-    fopen('php://input', 'r'));
-}
+$resource = $database->create_planter($user->getClaim('uid'));
 
 echo json_encode_utf8($resource);
 ?>

@@ -7,18 +7,28 @@ class Planter extends Resource {
        */
       this.value = {
         vacationMode: false,
-        waterStartHour: 0,
-        waterPeriod: 8,
-        useMiracleGro: true,
-        moistureLowerBound: 40
+        vacationModeLength: 2,
+        useFeritizer: true,
+        moistureLowerBound: 20,
+        daysBetweenWaters: 7,
+        numberWatersInTank: 16,
+        currentWatersInTank: 16,
+        numberPumpRunsPerWater: 1,
+        numberFertilizersInTank: 8,
+        currentFertilizersInTank: 8
       };
     }
     this.label = {
       vacationMode: 'Vacation Mode: {0}',
-      waterStartHour: 'Hour To Start Watering: {0}',
-      waterPeriod: 'Water Every {0} Hours',
-      useMiracleGro: 'Use Miracle Gro: {0}',
-      moistureLowerBound: 'Moisture Sensor Lower Bound: {0}'
+      vacationModeLength: 'Vacation Mode Length: {0} weeks',
+      useFeritizer: 'Use Feritizer: {0}',
+      moistureLowerBound: 'Moisture Sensor Lower Bound: {0}',
+      daysBetweenWaters: 'Days Between Waters: {0}',
+      numberWatersInTank: 'Number Waters In Tank: {0}',
+      currentWatersInTank: 'Current Waters In Tank: {0}',
+      numberPumpRunsPerWater: 'Number Pump Runs Per Water: {0}',
+      numberFertilizersInTank: 'Number Fertilizers In Tank: {0}',
+      currentFertilizersInTank: 'Current Fertilizers In Tank: {0}'
     };
   }
 }
@@ -114,6 +124,32 @@ class PlanterModal extends View {
   }
 }
 
+class PlanterSetup extends Resource {
+  constructor(sync, name, meta, value) {
+    super(sync, name, 'planter.setup', meta, value);
+    if (typeof this.value !== 'object') {
+      this.value = {
+        SSID: '',
+        password: '',
+        token: ''
+      };
+    }
+  }
+  update(value) {
+    if (typeof value !== 'object' ||
+        typeof value.SSID !== 'string' ||
+        typeof value.password !== 'string' ||
+        typeof value.token !== 'string' ||
+        value.SSID.length === 0 ||
+        value.password.length === 0 ||
+        value.token.length === 0) {
+      this.value = value;
+      return Promise.resolve(this);
+    }
+    return super.update(value);
+  }
+}
+
 class PlanterAddModal extends View {
   constructor(app, element, resource) {
     super(app, element);
@@ -130,13 +166,7 @@ class PlanterAddModal extends View {
     title.innerText = 'Add Planter';
     center.appendChild(title);
     center.appendChild(document.createElement('br'));
-    // TODO Add sync which makes POST to planter to send SSID, password, and
-    // token over.
-    var setup = new Resource([], 'setup', 'planter.setup', {}, {
-      SSID: '',
-      password: '',
-      token: ''
-    });
+    var setup = new PlanterSetup([this.app.plantersync], 'setup');
     center.appendChild(
         new Input(setup, 'SSID', 'SSID',
           'mui-textfield').element);
@@ -145,17 +175,34 @@ class PlanterAddModal extends View {
           'mui-textfield').element);
     var next = new Button('Next', 'mui-btn mui-btn--primary');
     next.element.onclick = function(event) {
-      setup.update(setup.value);
-      console.log('POPDOWN');
-      this.app.popdown();
-      // TODO Configure planter with PlanterModal and add it to planters
-      // (this.resource)
-      // this.resource.add(this.resource.name, this.resource);
+      // Request a new planter be created and a token signed from the server
+      this.app.postsync.authenticated()
+      .then(function() {
+        return this.app.api.createplanter();
+      }.bind(this))
+      .then(function(token) {
+        setup.value.token = token.token;
+        console.log('NEXT', setup.value);
+        title = document.createElement('h1');
+        title.innerText = 'Connect to SmartPlanter WiFi';
+        center.innerHTML = '';
+        center.appendChild(title);
+        return setup.update(setup.value);
+      }.bind(this))
+      // .then(function() {
+        // TODO Configure planter with PlanterModal and add it to planters
+        // (this.resource)
+        // this.resource.add(this.resource.name, this.resource);
+      // }.bind(this))
+      .then(function() {
+        console.log('POPDOWN');
+        this.app.popdown();
+      }.bind(this));
     }.bind(this);
     center.appendChild(next.element);
     var cancel  = new Button('Cancel', 'mui-btn mui-btn--danger');
     cancel.element.onclick = function(event) {
-      console.log('POPDOWN');
+      console.log('Cancel', setup.value);
       this.app.popdown();
     }.bind(this);
     center.appendChild(cancel.element);

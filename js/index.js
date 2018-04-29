@@ -1,9 +1,13 @@
 class SmartPlanter extends App {
   constructor(element) {
     super(element);
-    this.sync.push(new PostSync([this.localstorage], 'poststorage',
+    this.plantersync = new PlanterSync([this.localstorage], 'plantersync',
+        this.processors.pre, this.processors.post, [], {}, 'http://10.0.1.1');
+    this.postsync = new PostSync([this.localstorage], 'poststorage',
         this.processors.pre, this.processors.post,
-        [this.localstorage], {}, location.href + 'api/'));
+        [this.localstorage], {}, location.href + 'api/')
+    this.api = this.postsync.api;
+    this.sync.push(this.postsync);
   }
   DOMLoaded() {
     this.loading = new Loading(this, 'Loading...');

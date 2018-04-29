@@ -57,7 +57,7 @@ class Database
             $this->db->exec("CREATE TABLE IF NOT EXISTS USERS (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email VARCHAR(100), password VARCHAR(2000) NOT NULL)");
         }
         if (!$this->table_exists('RESOURCES')) {
-            $this->db->exec("CREATE TABLE IF NOT EXISTS RESOURCES (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, data BLOB NOT NULL, FOREIGN KEY(user_id) REFERENCES USERS(id))");
+            $this->db->exec("CREATE TABLE IF NOT EXISTS RESOURCES (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, data BLOB, FOREIGN KEY(user_id) REFERENCES USERS(id))");
         }
     }
 
@@ -89,10 +89,9 @@ class Database
         return true;
     }
 
-    public function create_planter($user_id, $data) {
-        $statement = $this->db->prepare("INSERT INTO RESOURCES(user_id,data) VALUES(:user_id,:data)");
+    public function create_planter($user_id) {
+        $statement = $this->db->prepare("INSERT INTO RESOURCES(user_id) VALUES(:user_id)");
         $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-        $statement->bindValue(':data', $data, PDO::PARAM_LOB);
         $statement->execute();
         $planter_id = intval($this->db->lastInsertId());
         $planter = array(
