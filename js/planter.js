@@ -129,6 +129,7 @@ class PlanterSetup extends Resource {
     super(sync, name, 'planter.setup', meta, value);
     if (typeof this.value !== 'object') {
       this.value = {
+        plantername: '',
         SSID: '',
         password: '',
         token: ''
@@ -137,9 +138,11 @@ class PlanterSetup extends Resource {
   }
   update(value) {
     if (typeof value !== 'object' ||
+        typeof value.plantername !== 'string' ||
         typeof value.SSID !== 'string' ||
         typeof value.password !== 'string' ||
         typeof value.token !== 'string' ||
+        value.plantername.length === 0 ||
         value.SSID.length === 0 ||
         value.password.length === 0 ||
         value.token.length === 0) {
@@ -168,6 +171,9 @@ class PlanterAddModal extends View {
     center.appendChild(document.createElement('br'));
     var setup = new PlanterSetup([this.app.plantersync], 'setup');
     center.appendChild(
+        new Input(setup, 'plantername', 'Planter\'s Name',
+          'mui-textfield').element);
+    center.appendChild(
         new Input(setup, 'SSID', 'SSID',
           'mui-textfield').element);
     center.appendChild(
@@ -176,12 +182,23 @@ class PlanterAddModal extends View {
     var next = new Button('Next', 'mui-btn mui-btn--primary');
     next.element.onclick = function(event) {
       // Request a new planter be created and a token signed from the server
+      var _token = null;
       this.app.postsync.authenticated()
       .then(function() {
         return this.app.api.createplanter();
       }.bind(this))
       .then(function(token) {
-        setup.value.token = token.token;
+        _token = token.token;
+        var resource = new Planter([this.app.postsync],
+            setup.value.plantername);
+        resource.meta[this.app.postsync.value + '.id'] = token.id;
+        return resource.update(resource.value);
+      }.bind(this))
+      .then(function(resource) {
+        this.resource.add(resource.name, resource);
+      }.bind(this))
+      .then(function() {
+        setup.value.token = _token;
         console.log('NEXT', setup.value);
         title = document.createElement('h1');
         title.innerText = 'Connect to SmartPlanter WiFi';
@@ -189,11 +206,6 @@ class PlanterAddModal extends View {
         center.appendChild(title);
         return setup.update(setup.value);
       }.bind(this))
-      // .then(function() {
-        // TODO Configure planter with PlanterModal and add it to planters
-        // (this.resource)
-        // this.resource.add(this.resource.name, this.resource);
-      // }.bind(this))
       .then(function() {
         console.log('POPDOWN');
         this.app.popdown();

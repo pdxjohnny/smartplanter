@@ -18,7 +18,7 @@ class PlanterSync extends Sync {
       image.onload = function() {
         resolve(resource);
       }.bind(this);
-      image.src = this.value + '/wifisave?s={0}&p={1}&t={2}'.format(
+      image.src = this.value + '/apiwifisave?s={0}&p={1}&t={2}'.format(
           resource.value.SSID, resource.value.password, resource.value.token);
     }.bind(this);
     return bound;

@@ -32,12 +32,19 @@ class PostSync extends Sync {
     }.bind(this));
   }
   authenticated() {
-    if (this.id.value === undefined) {
-      return this._load_id();
-    } else if (this.token.value === undefined) {
-      return this._load_token();
-    }
-    return Promise.resolve();
+    return Promise.all([this.id.queryPrimary(), this.token.queryPrimary()])
+    .then(function() {
+      if (this.id.value === undefined) {
+        return this.register();
+      }
+      if (this.token.value === undefined) {
+        return this.login();
+      }
+      return Promise.resolve();
+    }.bind(this))
+    .then(function() {
+      this.api.token = this.token.value;
+    }.bind(this));
   }
   _load_id() {
     return this.id.queryPrimary()
