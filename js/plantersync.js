@@ -13,7 +13,8 @@ class PlanterSync extends Sync {
     const bound = function() {
       var image = new Image();
       image.onerror = function() {
-        setTimeout(bound(resource, resolve, reject), 100);
+        // XXX Chrome keeps making requests for us
+        // setTimeout(bound(resource, resolve, reject), 100);
       }.bind(this);
       image.onload = function() {
         resolve(resource);

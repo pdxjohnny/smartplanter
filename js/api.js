@@ -107,6 +107,7 @@ class SmartPlanterAPI {
     } else {
       url += '?resource=' + resourceID;
     }
+    console.log('api.set', resourceID, method, data);
     return fetch(url, {
       headers: {
         'Authorization': 'Bearer ' + this.token

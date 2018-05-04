@@ -81,11 +81,17 @@ class PostSync extends Sync {
     return this.authenticated()
     .then(function() {
       return this._get(resource);
+    }.bind(this))
+    .then(function(value) {
+      return this.postprocess(resource, value);
     }.bind(this));
   }
-  set(resource, preprocessed) {
+  set(resource, value) {
     return this.authenticated()
     .then(function() {
+      return this.preprocess(resource, value);
+    }.bind(this))
+    .then(function(preprocessed) {
       return this._set(resource, preprocessed);
     }.bind(this));
   }
@@ -95,7 +101,7 @@ class PostSync extends Sync {
   }
   _set(resource, preprocessed) {
     var meta = JSON.parse(JSON.stringify(resource.meta));
-    // console.log('PostSync.set', resource.name, meta, this.token.value);
+    console.log('PostSync.set', resource.name, meta, preprocessed);
     if (typeof meta[this.value + '.id'] === 'undefined') {
       return resource._syncget(this.relay)
       .then(this._do_set(resource, meta, preprocessed));

@@ -189,7 +189,7 @@ class PlanterAddModal extends View {
       }.bind(this))
       .then(function(token) {
         _token = token.token;
-        var resource = new Planter([this.app.postsync],
+        var resource = new Planter(this.resource.sync,
             setup.value.plantername);
         resource.meta[this.app.postsync.value + '.id'] = token.id;
         return resource.update(resource.value);
