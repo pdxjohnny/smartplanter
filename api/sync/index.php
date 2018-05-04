@@ -30,6 +30,13 @@ if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
   }
   $resource = $database->get_resource($user->getClaim('uid'),
     $resource['resource']);
+  // Only return value of resource to planter
+  if ($user->hasClaim('pid') && $resource != NULL) {
+    $resource = json_decode($resource);
+    $resource = $resource->value;
+    echo $resource;
+    return;
+  }
 } else if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'POST')) {
   $resource = array(
     'id' => $database->create_resource($user->getClaim('uid'),
