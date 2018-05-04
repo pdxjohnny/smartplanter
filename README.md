@@ -92,3 +92,8 @@ curl -X PUT \
 curl -H "Authorization: Bearer $PTOKEN" \
   'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/sync/'
 ```
+
+## TODO
+
+- Remove planter gives format error when trying to reload listel for removed
+  planter.
