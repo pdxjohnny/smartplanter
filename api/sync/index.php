@@ -56,6 +56,26 @@ if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
     $err->render();
     return;
   }
+  // If the planter is making the update request then only update the data
+  if ($user->hasClaim('pid')) {
+    $resource = $database->get_resource($user->getClaim('uid'),
+      $resource['resource']);
+    if ($resource == NULL) {
+      $err = new ErrorResponse;
+      $err->code = 400;
+      $err->message = "Resource does not exist";
+      $err->render();
+      return;
+    }
+    $resource = json_decode($resource);
+    $resource->value = file_get_contents('php://input');
+    $resource = json_encode_utf8($resource);
+    echo json_encode_utf8(array(
+      'udpated' => $database->update_resource($user->getClaim('uid'),
+        $user->getClaim('pid'), $resource),
+    ));
+    return;
+  }
   $resource = array(
     'udpated' => $database->update_resource($user->getClaim('uid'),
       $resource['resource'],
