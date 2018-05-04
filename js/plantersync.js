@@ -15,7 +15,7 @@ class PlanterSync extends Sync {
       image.onerror = function() {
         // TODO Figure out when we need to set timeout and when the browser will
         // automaticly request it again
-        setTimeout(bound(resource, resolve, reject), 100);
+        setTimeout(bound(resource, resolve, reject), 5000);
       }.bind(this);
       image.onload = function() {
         resolve(resource);
