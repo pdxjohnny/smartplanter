@@ -59,55 +59,48 @@ class PlanterModal extends View {
       name.input.setAttribute('autofocus', true);
     }
     center.appendChild(name.element);
-    /* V: Vacation mode on or not
-     * Type: Boolean
-     * Valid Value: 0 or 1
-     * Comment: This has not been implemented
-     */
+    center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
           'mui-checkbox', 'checkbox').element);
-    /* W: The hour of the first watering schedule of a day
-     * Type: Integer
-     * Valid Value: 0-23 (inclusive)
-     * Comment: This should be the hour of the very first watering schedule of a
-     * day. If the value sending in can have another watering schedule earlier,
-     * the planter software will automatically update this value. (e.g. W = 15
-     * and X = 6, the very first watering schedule should be 3am instead of 15.
-     * Planter program will update W to 3)
-     */
-    var waterStartHour = new Input(this.resource, 'waterStartHour',
-        'Hour To Start Watering', 'mui-textfield', 'number');
-    waterStartHour.input.setAttribute('min', 0);
-    waterStartHour.input.setAttribute('max', 23);
-    center.appendChild(waterStartHour.element);
-    /* X: Water the plant every X hours
-     * Type: Integer
-     * Valid Value: 1, 2, 3, 4, 6, 8, 12
-     */
-    var waterPeriod = new Input(this.resource, 'waterPeriod', 'Water Every _ Hours',
-        'mui-textfield', 'number');
-    // TODO Validation
-    waterPeriod.input.setAttribute('min', 0);
-    waterPeriod.input.setAttribute('max', 12);
-    center.appendChild(waterPeriod.element);
-    /* Y: Fertilize or not (weekly)
-     * Type: Boolean
-     * Valid Value: 0 or 1
-     */
-    center.appendChild(new Input(this.resource, 'useMiracleGro', 'Use Miracle Gro',
-          'mui-checkbox', 'checkbox').element);
-    /* Z: Water the plant when the moisture of soil drops below Z% and watering
-     * is scheduled
-     * Type: Integer
-     * Valid Value: 1-100 (inclusive)
-     */
-    var moistureLowerBound = new Input(this.resource, 'moistureLowerBound',
-        'Moisture Sensor Lower Bound', 'mui-textfield', 'number');
-    moistureLowerBound.input.setAttribute('min', 0);
-    moistureLowerBound.input.setAttribute('max', 100);
-    center.appendChild(moistureLowerBound.element);
+    var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
+    var semiarid = new Button('Semi', 'mui-btn mui-btn--fab mui-btn--accent');
+    var tropical = new Button('Tropic', 'mui-btn mui-btn--fab mui-btn--primary');
+    center.appendChild(document.createElement('br'));
+    center.appendChild(arid.element);
+    center.appendChild(semiarid.element);
+    center.appendChild(tropical.element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(document.createElement('br'));
+    var climate = document.createElement('input');
+    climate.setAttribute('disabled', true);
+    center.appendChild(climate);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(document.createElement('br'));
+    center.appendChild(document.createElement('br'));
+    const setClimate = function() {
+      if (this.resource.value.moistureLowerBound <= 20) {
+        climate.value = 'Arid';
+      } else if (this.resource.value.moistureLowerBound >= 60) {
+        climate.value = 'Tropical';
+      } else {
+        climate.value = 'Semi-Arid';
+      }
+    }.bind(this);
+    arid.element.onclick = function(event) {
+      this.resource.value.moistureLowerBound = 20;
+      setClimate();
+    }.bind(this);
+    semiarid.element.onclick = function(event) {
+      this.resource.value.moistureLowerBound = 40;
+      setClimate();
+    }.bind(this);
+    tropical.element.onclick = function(event) {
+      this.resource.value.moistureLowerBound = 60;
+      setClimate();
+    }.bind(this);
+    setClimate();
     var save = new Button('Save', 'mui-btn mui-btn--primary');
-    save.onclick = function(event) {
+    save.element.onclick = function(event) {
       this.resource.update(this.resource.value);
       this.app.user.planters.add(this.resource.name, this.resource);
       this.app.popdown();
@@ -115,7 +108,7 @@ class PlanterModal extends View {
     center.appendChild(save.element);
     div.save = save;
     var remove  = new Button('Delete', 'mui-btn mui-btn--danger');
-    remove.onclick = function(event) {
+    remove.element.onclick = function(event) {
       this.app.user.planters.remove(this.resource.name);
       this.app.popdown();
     }.bind(this);
