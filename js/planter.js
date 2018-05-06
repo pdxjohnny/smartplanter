@@ -102,14 +102,13 @@ class PlanterModal extends View {
     var save = new Button('Save', 'mui-btn mui-btn--primary');
     save.element.onclick = function(event) {
       this.resource.update(this.resource.value);
-      this.app.user.planters.add(this.resource.name, this.resource);
       this.app.popdown();
     }.bind(this);
     center.appendChild(save.element);
     div.save = save;
     var remove  = new Button('Delete', 'mui-btn mui-btn--danger');
     remove.element.onclick = function(event) {
-      this.app.user.planters.remove(this.resource.name);
+      this.app.planters.remove(this.resource.name);
       this.app.popdown();
     }.bind(this);
     center.appendChild(remove.element);
@@ -169,9 +168,10 @@ class PlanterAddModal extends View {
     center.appendChild(
         new Input(setup, 'SSID', 'SSID',
           'mui-textfield').element);
-    center.appendChild(
-        new Input(setup, 'password', 'Password',
-          'mui-textfield').element);
+    var password = new Input(setup, 'password', 'Password', 'mui-textfield');
+    password.input.setAttribute('type', 'password');
+    password.input.setAttribute('autocomplete', 'new-password');
+    center.appendChild(password.element);
     var next = new Button('Next', 'mui-btn mui-btn--primary');
     next.element.onclick = function(event) {
       // Request a new planter be created and a token signed from the server

@@ -95,5 +95,7 @@ curl -H "Authorization: Bearer $PTOKEN" \
 
 ## TODO
 
-- Remove planter gives format error when trying to reload listel for removed
-  planter.
+- Calendar with days highlighted for projected watering of plant. This will
+  in PlanterListel.
+- Push notifications (waiting on response from CAT on multi byte string library
+  installation).
