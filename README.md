@@ -99,3 +99,5 @@ curl -H "Authorization: Bearer $PTOKEN" \
   in PlanterListel.
 - Push notifications (waiting on response from CAT on multi byte string library
   installation).
+- Offline compatibility with changes to UpUp so it doesn't use fetch to make the
+  Image request or something from scratch.
