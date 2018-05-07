@@ -15,7 +15,9 @@ class Planter extends Resource {
         currentWatersInTank: 16,
         numberPumpRunsPerWater: 1,
         numberFertilizersInTank: 8,
-        currentFertilizersInTank: 8
+        currentFertilizersInTank: 8,
+        demoMode: false,
+        demoFrequency: 30
       };
     }
     this.label = {
@@ -28,7 +30,9 @@ class Planter extends Resource {
       currentWatersInTank: 'Current Waters In Tank: {0}',
       numberPumpRunsPerWater: 'Number Pump Runs Per Water: {0}',
       numberFertilizersInTank: 'Number Fertilizers In Tank: {0}',
-      currentFertilizersInTank: 'Current Fertilizers In Tank: {0}'
+      currentFertilizersInTank: 'Current Fertilizers In Tank: {0}',
+      demoMode: 'Demo Mode: {0}',
+      demoFrequency: 'Demo Mode Frequency: Water every {0} seconds'
     };
   }
 }
@@ -106,6 +110,7 @@ class PlanterModal extends View {
     }.bind(this);
     center.appendChild(save.element);
     div.save = save;
+    // TODO Add advanced button which enables more settings
     var remove  = new Button('Delete', 'mui-btn mui-btn--danger');
     remove.element.onclick = function(event) {
       this.app.planters.remove(this.resource.name);
