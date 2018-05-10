@@ -44,6 +44,17 @@ class PlanterDict extends Dict {
 }
 
 class PlanterModal extends View {
+  constructor(app, element, resource) {
+    super(app, element, resource);
+    this.advancedOptions = [
+      new Input(this.resource, 'vacationModeLength',
+          'Vacation Mode length in weeks', 'mui-textfield'),
+      new Input(this.resource, 'demoMode', 'Demo Mode',
+          'mui-checkbox', 'checkbox'),
+      new Input(this.resource, 'demoFrequency', 'Demo Frequency in seconds',
+          'mui-textfield', 'number'),
+    ];
+  }
   reload() {
     var div = super.reload();
     div.user = this;
@@ -117,7 +128,20 @@ class PlanterModal extends View {
       this.app.popdown();
     }.bind(this);
     center.appendChild(remove.element);
+    center.appendChild(new Checkbox('Advanced', 'mui-checkbox',
+        this.showAdvanced.bind(this), this.hideAdvanced.bind(this)).element);
     div.remove = remove;
+    this.center = center;
+  }
+  showAdvanced() {
+    for (var element in this.advancedOptions) {
+      this.center.appendChild(this.advancedOptions[element].element);
+    }
+  }
+  hideAdvanced() {
+    for (var element in this.advancedOptions) {
+      this.center.removeChild(this.advancedOptions[element].element);
+    }
   }
 }
 
