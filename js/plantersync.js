@@ -25,13 +25,16 @@ class PlanterSync extends Sync {
       image.onerror = function() {
         // TODO Figure out when we need to set timeout and when the browser will
         // automaticly request it again
-        setTimeout(bound(resource, resolve, reject), 5000);
+        setTimeout(function() {
+          bound(resource, resolve, reject);
+        }.bind(this), 5000);
       }.bind(this);
       image.onload = function() {
         found();
       }.bind(this);
-      image.src = this.value + '/apiwifisave?s={0}&p={1}&t={2}'.format(
-          resource.value.SSID, resource.value.password, resource.value.token);
+      image.src = this.value + '/apiwifisave?s={0}&p={1}&t={2}&r={3}'.format(
+          resource.value.SSID, resource.value.password, resource.value.token,
+          String(Math.random()));
     }.bind(this);
     return bound;
   }
