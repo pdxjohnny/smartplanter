@@ -95,9 +95,8 @@ curl -H "Authorization: Bearer $PTOKEN" \
 
 ## TODO
 
-- Calendar with days highlighted for projected watering of plant. This will
-  in PlanterListel.
-- Push notifications (waiting on response from CAT on multi byte string library
-  installation).
-- Offline compatibility with changes to UpUp so it doesn't use fetch to make the
-  Image request or something from scratch.
+- Calendar with days highlighted for projected watering of plant
+  (in PlanterListel).
+- Push notifications
+- Offline compatibility
+- UX Improvements, notification of planter received changes
