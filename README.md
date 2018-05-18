@@ -8,10 +8,7 @@ IoT Smart Planter PWA Client
 cd ~/public_html/
 git clone git@github.com:pdxjohnny/smartplanter --recursive
 cd smartplanter
-./scripts/token-keygen
-./scripts/composer-install
-cd api
-php ../composer.phar install
+./scripts/setup.sh
 ```
 
 ## Favicons
