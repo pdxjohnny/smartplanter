@@ -5,9 +5,13 @@ IoT Smart Planter PWA Client
 ## Setup
 
 ```console
+cd ~/public_html/
 git clone git@github.com:pdxjohnny/smartplanter --recursive
 cd smartplanter
-python3 -m http.server 1234 || python2 -m SimpleHTTPServer 1234
+./scripts/token-keygen
+./scripts/composer-install
+cd api
+php ../composer.phar install
 ```
 
 ## Favicons

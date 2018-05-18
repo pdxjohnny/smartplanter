@@ -3,3 +3,4 @@
 keys/
 *.db
 api/vendor/
+composer.phar
