@@ -1,0 +1,17 @@
+#!/bin/bash
+
+KEYDIR="keys"
+
+DIR="vapid"
+if [ "$#" == "1" ]; then
+  DIR=$1
+fi
+DIRPATH="${KEYDIR}/${DIR}"
+rm -rf ${DIRPATH}
+mkdir -pv ${DIRPATH}
+openssl ecparam -genkey -name prime256v1 -out ${DIRPATH}/private_key.pem
+openssl ec -in ${DIRPATH}/private_key.pem -pubout -outform DER \
+  | tail -c 65 | base64 | tr -d '='  | tr '/+' '_-' >> ${DIRPATH}/public_key.txt
+openssl ec -in ${DIRPATH}/private_key.pem -outform DER \
+  | tail -c +8 | head -c 32 | base64 | tr -d '=' | \
+  tr '/+' '_-' >> ${DIRPATH}/private_key.txt

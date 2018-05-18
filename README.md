@@ -11,6 +11,21 @@ cd smartplanter
 ./scripts/setup.sh
 ```
 
+## VAPID Keys for Push Notifications
+
+These are currently committed to the repo. To re-generate run the create-vapid
+script.
+
+Keys are only committed to the repo now because storage of them in a secure way
+would be complex to manage. Under no circumstances should they become publicly
+available. If this application is to become production ready they must be stored
+in a secure location and deployment should account for their retrieval at time
+of application stand up.
+
+```console
+./scripts/create-vapid
+```
+
 ## Favicons
 
 Generated with [RealFaviconGenerator](https://realfavicongenerator.net/)

@@ -1,6 +1,6 @@
 *.swp
 *.swo
-keys/
+keys/token/
 *.db
 api/vendor/
 composer.phar
