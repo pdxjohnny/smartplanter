@@ -69,6 +69,9 @@ if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
     }
     $resource = json_decode($resource);
     $resource->value = file_get_contents('php://input');
+    // TODO Send useful push notification to user
+    $push = new Push($database, $protect);
+    $push->send($resource->value);
     $resource = json_encode_utf8($resource);
     echo json_encode_utf8(array(
       'udpated' => $database->update_resource($user->getClaim('uid'),

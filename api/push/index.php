@@ -14,9 +14,13 @@ if ($user == false) {
 }
 
 $database = new Database;
+/* DEBUG
+if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'GET')) {
+  $resource = $database->get_push($user->getClaim('uid'));
+} else */
 if (0 == strcmp($_SERVER['REQUEST_METHOD'], 'POST')) {
   $resource = client_input(array(
-    'endpoint' => FILTER_SANITIZE_URL,
+    'endpoint' => FILTER_UNSAFE_RAW,
     'public_key' => FILTER_SANITIZE_STRING,
     'auth_token' => FILTER_SANITIZE_STRING,
   ));
