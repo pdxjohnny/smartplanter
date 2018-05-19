@@ -247,6 +247,40 @@ class PlanterListel extends Listel {
   constructor(app, element, resource) {
     super(app, element, resource, PlanterModal);
   }
+  reload() {
+    var div = super.reload();
+    div.innerHTML = '';
+    var title = document.createElement('h2');
+    div.appendChild(title);
+    title.innerText = this.resource.name;
+    var desc = document.createElement('p');
+    desc.className = 'mui--text-center';
+    div.appendChild(desc);
+    desc.innerText = 'Estimated watering schedule';
+    var calEl = document.createElement('div');
+    div.appendChild(calEl);
+    calEl.className = 'auto-jsCalendar material-theme';
+    var cal = jsCalendar.new(calEl);
+    const addDays = function(date, days) {
+      var result = new Date(date);
+      result.setDate(result.getDate() + days);
+      console.log(result);
+      return result;
+    };
+    const formatDate = function(date) {
+      return ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+    };
+    // TODO Find out when plant was last watered
+    var today = new Date();
+    var waterDates = [];
+    for (var i in [1, 2, 3, 4, 5]) {
+      i = Number(i);
+      var day = formatDate(addDays(today, this.resource.value.daysBetweenWaters * i));
+      waterDates.push(day);
+    }
+    console.log('waterDates', waterDates);
+    cal.select(waterDates);
+  }
 }
 
 class PlanterList extends List {
