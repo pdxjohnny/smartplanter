@@ -30,7 +30,9 @@ class SmartPlanter extends App {
 }
 
 window.addEventListener('load', function() {
-  var app =  new SmartPlanter(document.getElementById('app'));
+  var app = new SmartPlanter(document.getElementById('app'));
+  // TODO Remove this
+  window.app = app;
   app.DOMLoaded();
 });
 

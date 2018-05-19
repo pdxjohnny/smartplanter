@@ -9,4 +9,5 @@ require_once('auth.php');
 require_once('db.php');
 require_once('protect_with_auth.php');
 require_once('error_response.php');
+require_once('push.php');
 ?>

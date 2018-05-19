@@ -126,4 +126,28 @@ class SmartPlanterAPI {
       }.bind(this))
     }.bind(this))
   }
+  update_push(endpoint, public_key, auth_token) {
+    var url = this.endpoint + 'push/';
+    console.log('api.update_push', endpoint, public_key, auth_token);
+    var data = 'endpoint={0}&public_key={1}&auth_token={2}'.format(
+        endpoint, public_key, auth_token);
+    return fetch(url, {
+      headers: {
+        'Authorization': 'Bearer ' + this.token,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      method: 'POST',
+      body: data,
+    })
+    .then(function(response) {
+      return response.text()
+      .then(function(text) {
+        try {
+          return JSON.parse(text);
+        } catch (err) {
+          throw new Error(text);
+        }
+      }.bind(this))
+    }.bind(this))
+  }
 }
