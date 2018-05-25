@@ -113,6 +113,7 @@ curl -H "Authorization: Bearer $PTOKEN" \
 
 - Calendar with days highlighted for projected watering of plant
   (in PlanterListel).
-- Push notifications
+- Push notifications (WebPush incompatibility with php 7.0 only compatible with
+  7.1 and above, fork and fix)
 - Offline compatibility
 - UX Improvements, notification of planter received changes
