@@ -8,7 +8,7 @@ class Planter extends Resource {
       this.value = {
         vacationMode: false,
         vacationModeLength: 2,
-        useFeritizer: true,
+        useFeritizer: false,
         moistureLowerBound: 40,
         daysBetweenWaters: -1,
         numberWatersInTank: -1,
@@ -17,7 +17,7 @@ class Planter extends Resource {
         numberFertilizersInTank: -1,
         currentFertilizersInTank: -1,
         demoMode: true,
-        demoFrequency: 30,
+        demoFrequency: 5,
         moisture: -1,
 	light: -1,
 	moistureError: false,
@@ -85,7 +85,7 @@ class PlanterModal extends View {
     center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
           'mui-checkbox', 'checkbox').element);
-    center.appendChild(new Input(this.resource, 'useFertilizer', 'Use Fertilizer',
+    center.appendChild(new Input(this.resource, 'useFeritizer', 'Use Ferilizer',
           'mui-checkbox', 'checkbox').element);
     var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
     var semiarid = new Button('Semi', 'mui-btn mui-btn--fab mui-btn--accent');
