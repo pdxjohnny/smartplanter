@@ -4,6 +4,7 @@ class Planter extends Resource {
     if (typeof this.value !== 'object') {
       /* If a planter does not receive a configuration file, it will use default
        * settings. (V = 0, W = 0, X = 8, Y = 1, Z = 40)
+       * timeStamp format: 58265 18-05-27 00:10:50 50 0 0  23.1 UTC(NIST) *
        */
       this.value = {
         vacationMode: false,
@@ -19,9 +20,9 @@ class Planter extends Resource {
         demoMode: true,
         demoFrequency: 5,
         moisture: -1,
-	light: -1,
-	moistureError: false,
-	timeStamp: 'N/A'
+        light: -1,
+        moistureError: false,
+        timeStamp: 'N/A'
       };
     }
     this.label = {
@@ -51,107 +52,186 @@ class PlanterDict extends Dict {
   }
 }
 
-class PlanterModal extends View {
-  constructor(app, element, resource) {
+class PlanterAdvancedOptions extends View {
+  constructor(app, element, resource, back) {
     super(app, element, resource);
-    this.advancedOptions = [
-      new Input(this.resource, 'vacationModeLength',
-          'Vacation Mode length in weeks', 'mui-textfield'),
-      new Input(this.resource, 'demoMode', 'Demo Mode',
-          'mui-checkbox', 'checkbox'),
-      new Input(this.resource, 'demoFrequency', 'Demo Frequency in seconds',
-          'mui-textfield', 'number'),
-    ];
+    this.back = back;
   }
   reload() {
     var div = super.reload();
+    var center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
+    var title = document.createElement('h1');
+    title.innerText = 'Advanced Options';
+    center.appendChild(title);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
+          'mui-checkbox', 'checkbox').element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'vacationModeLength',
+          'Vacation Mode length in weeks', 'mui-textfield').element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'useFeritizer', 'Use Ferilizer',
+          'mui-checkbox', 'checkbox').element);
+    var back = new Button('< Back', 'mui-btn mui-btn--raised');
+    back.element.onclick = function(event) {
+      this.back();
+    }.bind(this);
+    center.appendChild(back.element);
+    return div;
+  }
+}
+
+class PlanterDiagnostics extends View {
+  constructor(app, element, resource, back) {
+    super(app, element, resource);
+    this.back = back;
+  }
+  reload() {
+    var div = super.reload();
+    var center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
+    var title = document.createElement('h1');
+    title.innerText = 'Diagnostics';
+    center.appendChild(title);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'demoMode',
+          'Demo Mode', 'mui-checkbox', 'checkbox').element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'demoFrequency',
+          'Demo Frequency in seconds', 'mui-textfield', 'number').element);
+    center.appendChild(document.createElement('br'));
+    appendResourceValue(this.resource, div);
+    center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
+    var back = new Button('< Back', 'mui-btn mui-btn--raised');
+    back.element.onclick = function(event) {
+      this.back();
+    }.bind(this);
+    center.appendChild(back.element);
+    return div;
+  }
+}
+
+class PlanterCalendar extends View {
+  reload() {
+    var div = super.reload();
+    var desc = document.createElement('p');
+    div.appendChild(desc);
+    desc.innerText = 'Estimated watering schedule';
+    var calEl = document.createElement('div');
+    div.appendChild(calEl);
+    calEl.className = 'auto-jsCalendar material-theme';
+    var cal = jsCalendar.new(calEl);
+    const addDays = function(date, days) {
+      var result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    };
+    const formatDate = function(date) {
+      return ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+    };
+    // TODO Find out when plant was last watered
+    var today = new Date();
+    if (this.resource.value.daysBetweenWaters < 1) {
+      this.resource.value.daysBetweenWaters = 7;
+    }
+    for (var i = 0; i < 30; i++) {
+      cal.select(formatDate(addDays(today,
+              this.resource.value.daysBetweenWaters * Number(i))));
+    }
+    return div;
+  }
+}
+
+class PlanterModal extends View {
+  constructor(app, element, resource) {
+    super(app, element, resource);
+    this.cal = new PlanterCalendar(app,
+        document.createElement('div'), resource);
+    this.advanced = new PlanterAdvancedOptions(app,
+        document.createElement('div'), resource, this.back.bind(this));
+    this.diagnostics = new PlanterDiagnostics(app,
+        document.createElement('div'), resource, this.back.bind(this));
+  }
+  reload() {
+    var div = super.reload();
+    this.cal.reload();
+    this.advanced.reload();
+    this.diagnostics.reload();
     div.user = this;
     div.dismissed = function() {};
     var center = document.createElement('center');
     div.appendChild(center);
     center.className = 'mui--align-middle';
     var title = document.createElement('h1');
-    title.innerText = 'Configure Planter';
+    title.innerText = this.resource.name;
     center.appendChild(title);
-    center.appendChild(document.createElement('br'));
-    /* Planter name */
-    var name = new Input(this.resource, 'name', 'Name', 'mui-textfield');
-    if (typeof this.resource.name === 'string' && this.resource.name.length > 0) {
-      name.input.setAttribute('disabled', true);
-    } else {
-      name.input.setAttribute('autofocus', true);
-    }
-    center.appendChild(name.element);
-    center.appendChild(document.createElement('br'));
-    center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
-          'mui-checkbox', 'checkbox').element);
-    center.appendChild(new Input(this.resource, 'useFeritizer', 'Use Ferilizer',
-          'mui-checkbox', 'checkbox').element);
+    center.appendChild(this.cal.element);
     var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
     var semiarid = new Button('Semi', 'mui-btn mui-btn--fab mui-btn--accent');
     var tropical = new Button('Tropic', 'mui-btn mui-btn--fab mui-btn--primary');
-    center.appendChild(document.createElement('br'));
     center.appendChild(arid.element);
     center.appendChild(semiarid.element);
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
-    center.appendChild(document.createElement('br'));
-    var climate = document.createElement('input');
-    climate.setAttribute('disabled', true);
-    center.appendChild(climate);
-    center.appendChild(document.createElement('br'));
-    center.appendChild(document.createElement('br'));
-    center.appendChild(document.createElement('br'));
     const setClimate = function() {
-      if (this.resource.value.moistureLowerBound <= 20) {
-        climate.value = 'Arid';
-      } else if (this.resource.value.moistureLowerBound >= 60) {
-        climate.value = 'Tropical';
-      } else {
-        climate.value = 'Semi-Arid';
+      for (var choice of [arid, semiarid, tropical]) {
+        choice.element.className.replace(' choosen_plant_type', '');
       }
+      if (this.resource.value.moistureLowerBound <= 20) {
+        arid.className += ' choosen_plant_type';
+      } else if (this.resource.value.moistureLowerBound >= 60) {
+        semiarid.className += ' choosen_plant_type';
+      } else {
+        tropical.className += ' choosen_plant_type';
+      }
+      this.cal.reload();
+      this.resource.update(this.resource.value);
     }.bind(this);
     arid.element.onclick = function(event) {
       this.resource.value.moistureLowerBound = 20;
+      this.resource.value.daysBetweenWaters = 14;
       setClimate();
     }.bind(this);
     semiarid.element.onclick = function(event) {
       this.resource.value.moistureLowerBound = 40;
+      this.resource.value.daysBetweenWaters = 10;
       setClimate();
     }.bind(this);
     tropical.element.onclick = function(event) {
       this.resource.value.moistureLowerBound = 60;
+      this.resource.value.daysBetweenWaters = 7;
       setClimate();
     }.bind(this);
     setClimate();
-    var save = new Button('Save', 'mui-btn mui-btn--primary');
-    save.element.onclick = function(event) {
-      this.resource.update(this.resource.value);
-      this.app.popdown();
+    var advanced = new Button('Advanced', 'mui-btn mui-btn--primary');
+    advanced.element.onclick = function(event) {
+      this.element.innerHTML = '';
+      this.element.appendChild(this.advanced.element);
     }.bind(this);
-    center.appendChild(save.element);
-    div.save = save;
-    // TODO Add advanced button which enables more settings
-    var remove  = new Button('Delete', 'mui-btn mui-btn--danger');
+    center.appendChild(advanced.element);
+    var remove = new Button('Delete', 'mui-btn mui-btn--danger');
     remove.element.onclick = function(event) {
       this.app.planters.remove(this.resource.name);
       this.app.popdown();
     }.bind(this);
     center.appendChild(remove.element);
-    center.appendChild(new Checkbox('Advanced', 'mui-checkbox',
-        this.showAdvanced.bind(this), this.hideAdvanced.bind(this)).element);
-    div.remove = remove;
+    center.appendChild(document.createElement('br'));
+    var diagnostics = new Button('Diagnostics', 'mui-btn mui-btn--accent');
+    diagnostics.element.onclick = function(event) {
+      this.element.innerHTML = '';
+      this.element.appendChild(this.diagnostics.element);
+    }.bind(this);
+    center.appendChild(diagnostics.element);
     this.center = center;
   }
-  showAdvanced() {
-    for (var element in this.advancedOptions) {
-      this.center.appendChild(this.advancedOptions[element].element);
-    }
-  }
-  hideAdvanced() {
-    for (var element in this.advancedOptions) {
-      this.center.removeChild(this.advancedOptions[element].element);
-    }
+  back() {
+    this.element.innerHTML = '';
+    this.element.appendChild(this.div);
   }
 }
 
@@ -250,12 +330,29 @@ class PlanterAddModal extends View {
       this.app.popdown();
     }.bind(this);
     center.appendChild(cancel.element);
+    return div;
   }
 }
 
 class PlanterListel extends Listel {
   constructor(app, element, resource) {
     super(app, element, resource, PlanterModal);
+  }
+  reload() {
+    var div = super.reload();
+    this.element.className = 'mui-col-xs-6';
+    div.innerHTML = '';
+    var titleHolder = document.createElement('h2');
+    titleHolder.className = 'mui--align-middle';
+    div.appendChild(titleHolder);
+    var img = new Image();
+    titleHolder.appendChild(img);
+    img.src = 'icons/android-chrome-72x72.png';
+    img.style = 'margin-left: auto; margin-right: auto;';
+    var title = document.createElement('center');
+    titleHolder.appendChild(title);
+    title.innerText = this.resource.name;
+    return div;
   }
 }
 
@@ -264,6 +361,21 @@ class PlanterList extends List {
     super(app, element, resource, PlanterListel, 'No Planters');
     this.addButton = addButton;
     this.addButton.onclick = this.addPlanter.bind(this);
+  }
+  reload() {
+    return super.reload()
+    .then(function() {
+      this.element.style.marginTop = '20px';
+      var children = this.element.childNodes;
+      for (var i = 0; i < children.length; i += 2) {
+        var row = document.createElement('div');
+        row.className = 'mui-row';
+        this.element.appendChild(row);
+        for (var j = i; j < i && typeof children[j] !== 'undefined'; j++) {
+          row.appendChild(children[j]);
+        }
+      }
+    }.bind(this));
   }
   addPlanter() {
     var add = new PlanterAddModal(this.app, document.createElement('div'),

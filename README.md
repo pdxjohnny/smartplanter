@@ -11,6 +11,21 @@ cd smartplanter
 ./scripts/setup.sh
 ```
 
+## VAPID Keys for Push Notifications
+
+These are currently committed to the repo. To re-generate run the create-vapid
+script.
+
+Keys are only committed to the repo now because storage of them in a secure way
+would be complex to manage. Under no circumstances should they become publicly
+available. If this application is to become production ready they must be stored
+in a secure location and deployment should account for their retrieval at time
+of application stand up.
+
+```console
+./scripts/create-vapid
+```
+
 ## Favicons
 
 Generated with [RealFaviconGenerator](https://realfavicongenerator.net/)
@@ -96,8 +111,9 @@ curl -H "Authorization: Bearer $PTOKEN" \
 
 ## TODO
 
-- Calendar with days highlighted for projected watering of plant
-  (in PlanterListel).
-- Push notifications
-- Offline compatibility
+- Calendar needs to predict from last watered day, now supplied by planter.
+- Push notifications (WebPush incompatibility with php 7.0 only compatible with
+  7.1 and above, fork and fix)
+- Offline compatibility (All libs use fetch and the mixed content hack doesn't
+  work with that)
 - UX Improvements, notification of planter received changes

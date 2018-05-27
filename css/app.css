@@ -1,6 +1,8 @@
 html, body {
   /* background-color: #F0FBF7; */
   background-color: #FFFFFF;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .menu {
@@ -30,6 +32,13 @@ html, body {
 .list>.mui-panel {
   margin-top: 0px;
   margin-bottom: 0px;
+}
+
+.choosen_plant_type{
+  border:1px solid lightgreen;
+  border-radius:50%;
+  -moz-border-radius:50%;
+  -webkit-border-radius:50%;
 }
 
 /**
