@@ -103,7 +103,10 @@ class PlanterDiagnostics extends View {
     center.appendChild(new Input(this.resource, 'demoFrequency',
           'Demo Frequency in seconds', 'mui-textfield', 'number').element);
     center.appendChild(document.createElement('br'));
-    appendResourceValue(this.resource, center);
+    appendResourceValue(this.resource, div);
+    center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
     var back = new Button('< Back', 'mui-btn mui-btn--raised');
     back.element.onclick = function(event) {
       this.back();
