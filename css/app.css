@@ -32,6 +32,13 @@ html, body {
   margin-bottom: 0px;
 }
 
+.choosen_plant_type{
+  border:1px solid lightgreen;
+  border-radius:50%;
+  -moz-border-radius:50%;
+  -webkit-border-radius:50%;
+}
+
 /**
  * MUI Checkbox and Radio Components
  */

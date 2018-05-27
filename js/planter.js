@@ -1,9 +1,9 @@
-class Planter extends Resource {
   constructor(sync, name, meta, value) {
     super(sync, name, 'planter', meta, value);
     if (typeof this.value !== 'object') {
       /* If a planter does not receive a configuration file, it will use default
        * settings. (V = 0, W = 0, X = 8, Y = 1, Z = 40)
+       * timeStamp format: 58265 18-05-27 00:10:50 50 0 0  23.1 UTC(NIST) *
        */
       this.value = {
         vacationMode: false,
@@ -19,9 +19,9 @@ class Planter extends Resource {
         demoMode: true,
         demoFrequency: 5,
         moisture: -1,
-	light: -1,
-	moistureError: false,
-	timeStamp: 'N/A'
+        light: -1,
+        moistureError: false,
+        timeStamp: 'N/A'
       };
     }
     this.label = {
@@ -51,40 +51,97 @@ class PlanterDict extends Dict {
   }
 }
 
-class PlanterModal extends View {
+class PlanterAdvancedOptions extends View {
   constructor(app, element, resource) {
     super(app, element, resource);
-    this.advancedOptions = [
-      new Input(this.resource, 'vacationModeLength',
-          'Vacation Mode length in weeks', 'mui-textfield'),
-      new Input(this.resource, 'demoMode', 'Demo Mode',
-          'mui-checkbox', 'checkbox'),
-      new Input(this.resource, 'demoFrequency', 'Demo Frequency in seconds',
-          'mui-textfield', 'number'),
-    ];
   }
   reload() {
     var div = super.reload();
+    var center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
+    var title = document.createElement('h1');
+    title.innerText = 'Advanced Options';
+    center.appendChild(title);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'demoMode',
+          'Demo Mode', 'mui-checkbox', 'checkbox').element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'demoFrequency',
+          'Demo Frequency in seconds', 'mui-textfield', 'number').element);
+    return div;
+  }
+}
+
+class PlanterDisplayValue extends Listel {
+  constructor(app, element, resource) {
+    super(app, element, resource);
+  }
+}
+
+class PlanterCalendar extends View {
+  reload() {
+    var div = super.reload();
+    var desc = document.createElement('p');
+    div.appendChild(desc);
+    desc.innerText = 'Estimated watering schedule';
+    var calEl = document.createElement('div');
+    div.appendChild(calEl);
+    calEl.className = 'auto-jsCalendar material-theme';
+    var cal = jsCalendar.new(calEl);
+    const addDays = function(date, days) {
+      var result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    };
+    const formatDate = function(date) {
+      return ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+    };
+    // TODO Find out when plant was last watered
+    var today = new Date();
+    var waterDates = [];
+    for (var i in [1, 2, 3, 4, 5]) {
+      i = Number(i);
+      var day = formatDate(addDays(today, this.resource.value.daysBetweenWaters * i));
+      waterDates.push(day);
+    }
+    cal.select(waterDates);
+    return div;
+  }
+}
+
+class PlanterModal extends View {
+  constructor(app, element, resource) {
+    super(app, element, resource);
+    this.cal = new PlanterCalendar(app,
+        document.createElement('div'), resoruce);
+    this.advanced = new PlanterAdvancedOptions(app,
+        document.createElement('div'), resoruce);
+    this.displayValue = new PlanterDisplayValue(app,
+        document.createElement('div'), resoruce);
+  }
+  reload() {
+    var div = super.reload();
+    this.cal.reload();
+    this.advanced.reload();
+    this.displayValue.reload();
     div.user = this;
     div.dismissed = function() {};
     var center = document.createElement('center');
     div.appendChild(center);
     center.className = 'mui--align-middle';
     var title = document.createElement('h1');
-    title.innerText = 'Configure Planter';
+    title.innerText = this.resource.name;
     center.appendChild(title);
     center.appendChild(document.createElement('br'));
-    /* Planter name */
-    var name = new Input(this.resource, 'name', 'Name', 'mui-textfield');
-    if (typeof this.resource.name === 'string' && this.resource.name.length > 0) {
-      name.input.setAttribute('disabled', true);
-    } else {
-      name.input.setAttribute('autofocus', true);
-    }
-    center.appendChild(name.element);
+    center.appendChild(this.cal.element);
     center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
           'mui-checkbox', 'checkbox').element);
+    center.appendChild(document.createElement('br'));
+    center.appendChild(new Input(this.resource, 'vacationModeLength',
+          'Vacation Mode length in weeks', 'mui-textfield').element);
+    center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'useFeritizer', 'Use Ferilizer',
           'mui-checkbox', 'checkbox').element);
     var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
@@ -96,19 +153,17 @@ class PlanterModal extends View {
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
     center.appendChild(document.createElement('br'));
-    var climate = document.createElement('input');
-    climate.setAttribute('disabled', true);
-    center.appendChild(climate);
-    center.appendChild(document.createElement('br'));
-    center.appendChild(document.createElement('br'));
     center.appendChild(document.createElement('br'));
     const setClimate = function() {
+      for (var chooice of [arid, semiarid, tropical]) {
+        choice.className.replace(' choosen_plant_type', '');
+      }
       if (this.resource.value.moistureLowerBound <= 20) {
-        climate.value = 'Arid';
+        arid.className += ' choosen_plant_type';
       } else if (this.resource.value.moistureLowerBound >= 60) {
-        climate.value = 'Tropical';
+        semiarid.className += ' choosen_plant_type';
       } else {
-        climate.value = 'Semi-Arid';
+        tropical.className += ' choosen_plant_type';
       }
     }.bind(this);
     arid.element.onclick = function(event) {
@@ -131,27 +186,35 @@ class PlanterModal extends View {
     }.bind(this);
     center.appendChild(save.element);
     div.save = save;
-    // TODO Add advanced button which enables more settings
     var remove  = new Button('Delete', 'mui-btn mui-btn--danger');
     remove.element.onclick = function(event) {
       this.app.planters.remove(this.resource.name);
       this.app.popdown();
     }.bind(this);
     center.appendChild(remove.element);
-    center.appendChild(new Checkbox('Advanced', 'mui-checkbox',
-        this.showAdvanced.bind(this), this.hideAdvanced.bind(this)).element);
     div.remove = remove;
+    this.checkAdvanced = new Checkbox('Advanced', 'mui-checkbox',
+        this.showAdvanced.bind(this), this.showSelf.bind(this));
+    center.appendChild(this.checkAdvanced.element);
+    this.checkDiagnostics = new Checkbox('Diagnostics', 'mui-checkbox',
+        this.showDisplayValue.bind(this),
+        this.showSelf.bind(this));
+    center.appendChild(this.checkDiagnostics.element);
     this.center = center;
   }
-  showAdvanced() {
-    for (var element in this.advancedOptions) {
-      this.center.appendChild(this.advancedOptions[element].element);
-    }
+  showSelf() {
+    this.element.innerHTML = '';
+    this.element.appendChild(this.div);
   }
-  hideAdvanced() {
-    for (var element in this.advancedOptions) {
-      this.center.removeChild(this.advancedOptions[element].element);
-    }
+  showAdvanced() {
+    this.element.innerHTML = '';
+    this.checkAdvanced.input.checked = false;
+    this.element.appendChild(this.advanced);
+  }
+  showDisplayValue() {
+    this.element.innerHTML = '';
+    this.checkDiagnostics.input.checked = false;
+    this.element.appendChild(this.displayValue);
   }
 }
 
@@ -250,6 +313,7 @@ class PlanterAddModal extends View {
       this.app.popdown();
     }.bind(this);
     center.appendChild(cancel.element);
+    return div;
   }
 }
 
@@ -263,33 +327,7 @@ class PlanterListel extends Listel {
     var title = document.createElement('h2');
     div.appendChild(title);
     title.innerText = this.resource.name;
-    var desc = document.createElement('p');
-    desc.className = 'mui--text-center';
-    div.appendChild(desc);
-    desc.innerText = 'Estimated watering schedule';
-    var calEl = document.createElement('div');
-    div.appendChild(calEl);
-    calEl.className = 'auto-jsCalendar material-theme';
-    var cal = jsCalendar.new(calEl);
-    const addDays = function(date, days) {
-      var result = new Date(date);
-      result.setDate(result.getDate() + days);
-      console.log(result);
-      return result;
-    };
-    const formatDate = function(date) {
-      return ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
-    };
-    // TODO Find out when plant was last watered
-    var today = new Date();
-    var waterDates = [];
-    for (var i in [1, 2, 3, 4, 5]) {
-      i = Number(i);
-      var day = formatDate(addDays(today, this.resource.value.daysBetweenWaters * i));
-      waterDates.push(day);
-    }
-    console.log('waterDates', waterDates);
-    cal.select(waterDates);
+    return div;
   }
 }
 
