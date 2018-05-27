@@ -92,7 +92,7 @@ curl -H "Authorization: Bearer $TOKEN" \
   'https://web.cecs.pdx.edu/~jsa3/smartplanter/api/createplanter/'
 # export PTOKEN=`result of token in the above JSON reponse`
 ```
-re
+
 ### Update Planter
 
 ```console
