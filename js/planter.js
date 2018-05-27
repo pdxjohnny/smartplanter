@@ -8,16 +8,20 @@ class Planter extends Resource {
       this.value = {
         vacationMode: false,
         vacationModeLength: 2,
-        useFeritizer: true,
-        moistureLowerBound: 20,
-        daysBetweenWaters: 7,
-        numberWatersInTank: 16,
-        currentWatersInTank: 16,
-        numberPumpRunsPerWater: 1,
-        numberFertilizersInTank: 8,
-        currentFertilizersInTank: 8,
-        demoMode: false,
-        demoFrequency: 30
+        useFeritizer: false,
+        moistureLowerBound: 40,
+        daysBetweenWaters: -1,
+        numberWatersInTank: -1,
+        currentWatersInTank: -1,
+        numberPumpRunsPerWater: -1,
+        numberFertilizersInTank: -1,
+        currentFertilizersInTank: -1,
+        demoMode: true,
+        demoFrequency: 5,
+        moisture: -1,
+	light: -1,
+	moistureError: false,
+	timeStamp: 'N/A'
       };
     }
     this.label = {
@@ -32,7 +36,11 @@ class Planter extends Resource {
       numberFertilizersInTank: 'Number Fertilizers In Tank: {0}',
       currentFertilizersInTank: 'Current Fertilizers In Tank: {0}',
       demoMode: 'Demo Mode: {0}',
-      demoFrequency: 'Demo Mode Frequency: Water every {0} seconds'
+      demoFrequency: 'Demo Mode Frequency: Water every {0} seconds',
+      moisture: 'Moisture: {0}%',
+      light: 'Light: {0}',
+      moistureError: 'Moisture Error: {0}',
+      timeStamp: 'Last Water: {0}'
     };
   }
 }
@@ -76,6 +84,8 @@ class PlanterModal extends View {
     center.appendChild(name.element);
     center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'vacationMode', 'Vacation Mode',
+          'mui-checkbox', 'checkbox').element);
+    center.appendChild(new Input(this.resource, 'useFeritizer', 'Use Ferilizer',
           'mui-checkbox', 'checkbox').element);
     var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
     var semiarid = new Button('Semi', 'mui-btn mui-btn--fab mui-btn--accent');
