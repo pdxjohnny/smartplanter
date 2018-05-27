@@ -93,6 +93,9 @@ class PlanterDiagnostics extends View {
     var center = document.createElement('center');
     div.appendChild(center);
     center.className = 'mui--align-middle';
+    var title = document.createElement('h1');
+    title.innerText = 'Diagnostics';
+    center.appendChild(title);
     center.appendChild(document.createElement('br'));
     center.appendChild(new Input(this.resource, 'demoMode',
           'Demo Mode', 'mui-checkbox', 'checkbox').element);
@@ -130,16 +133,13 @@ class PlanterCalendar extends View {
     };
     // TODO Find out when plant was last watered
     var today = new Date();
-    var waterDates = [];
     if (this.resource.value.daysBetweenWaters < 1) {
       this.resource.value.daysBetweenWaters = 7;
     }
     for (var i = 0; i < 30; i++) {
-      i = Number(i);
-      var day = formatDate(addDays(today, this.resource.value.daysBetweenWaters * i));
-      waterDates.push(day);
+      cal.select(formatDate(addDays(today,
+              this.resource.value.daysBetweenWaters * Number(i))));
     }
-    cal.select(waterDates);
     return div;
   }
 }
@@ -337,9 +337,17 @@ class PlanterListel extends Listel {
   }
   reload() {
     var div = super.reload();
+    this.element.className = 'mui-col-xs-6';
     div.innerHTML = '';
-    var title = document.createElement('h2');
-    div.appendChild(title);
+    var titleHolder = document.createElement('h2');
+    titleHolder.className = 'mui--align-middle';
+    div.appendChild(titleHolder);
+    var img = new Image();
+    titleHolder.appendChild(img);
+    img.src = 'icons/android-chrome-72x72.png';
+    img.style = 'margin-left: auto; margin-right: auto;';
+    var title = document.createElement('center');
+    titleHolder.appendChild(title);
     title.innerText = this.resource.name;
     return div;
   }
@@ -350,6 +358,21 @@ class PlanterList extends List {
     super(app, element, resource, PlanterListel, 'No Planters');
     this.addButton = addButton;
     this.addButton.onclick = this.addPlanter.bind(this);
+  }
+  reload() {
+    return super.reload()
+    .then(function() {
+      this.element.style.marginTop = '20px';
+      var children = this.element.childNodes;
+      for (var i = 0; i < children.length; i += 2) {
+        var row = document.createElement('div');
+        row.className = 'mui-row';
+        this.element.appendChild(row);
+        for (var j = i; j < i && typeof children[j] !== 'undefined'; j++) {
+          row.appendChild(children[j]);
+        }
+      }
+    }.bind(this));
   }
   addPlanter() {
     var add = new PlanterAddModal(this.app, document.createElement('div'),
