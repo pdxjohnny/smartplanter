@@ -179,26 +179,28 @@ class PlanterModal extends View {
     title.innerText = this.resource.name;
     center.appendChild(title);
     center.appendChild(this.cal.element);
-    var arid = new Button('Arid', 'mui-btn mui-btn--fab mui-btn--danger');
-    var semiarid = new Button('Semi', 'mui-btn mui-btn--fab mui-btn--accent');
-    var tropical = new Button('Tropic', 'mui-btn mui-btn--fab mui-btn--primary');
+    var arid = new Button('Arid', 'mui-btn mui-btn--fab');
+    var semiarid = new Button('Semi', 'mui-btn mui-btn--fab');
+    var tropical = new Button('Tropic', 'mui-btn mui-btn--fab');
     center.appendChild(arid.element);
     center.appendChild(semiarid.element);
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
     const setClimate = function() {
       for (var choice of [arid, semiarid, tropical]) {
-        choice.element.className.replace(' choosen_plant_type', '');
+        choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
       }
       if (this.resource.value.moistureLowerBound <= 20) {
-        arid.className += ' choosen_plant_type';
+        arid.element.className += ' mui-btn--primary';
       } else if (this.resource.value.moistureLowerBound >= 60) {
-        semiarid.className += ' choosen_plant_type';
+        tropical.element.className += ' mui-btn--primary';
       } else {
-        tropical.className += ' choosen_plant_type';
+        semiarid.element.className += ' mui-btn--primary';
       }
-      this.cal.reload();
-      this.resource.update(this.resource.value);
+      setTimeout(function() {
+        this.cal.reload();
+        this.resource.update(this.resource.value);
+      }.bind(this), 0);
     }.bind(this);
     arid.element.onclick = function(event) {
       this.resource.value.moistureLowerBound = 20;
@@ -216,20 +218,20 @@ class PlanterModal extends View {
       setClimate();
     }.bind(this);
     setClimate();
-    var advanced = new Button('Advanced', 'mui-btn mui-btn--primary');
+    var advanced = new Button('Advanced', 'mui-btn mui-btn--raised mui-btn--primary');
     advanced.element.onclick = function(event) {
       this.element.innerHTML = '';
       this.element.appendChild(this.advanced.element);
     }.bind(this);
     center.appendChild(advanced.element);
-    var remove = new Button('Delete', 'mui-btn mui-btn--danger');
+    var remove = new Button('Delete', 'mui-btn mui-btn--raised mui-btn--danger');
     remove.element.onclick = function(event) {
       this.app.planters.remove(this.resource.name);
       this.app.popdown();
     }.bind(this);
     center.appendChild(remove.element);
     center.appendChild(document.createElement('br'));
-    var diagnostics = new Button('Diagnostics', 'mui-btn mui-btn--accent');
+    var diagnostics = new Button('Diagnostics', 'mui-btn mui-btn--raised');
     diagnostics.element.onclick = function(event) {
       this.element.innerHTML = '';
       this.element.appendChild(this.diagnostics.element);
