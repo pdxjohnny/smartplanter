@@ -355,8 +355,43 @@ class PlanterListel extends Listel {
     div.appendChild(titleHolder);
     var img = new Image();
     titleHolder.appendChild(img);
-    img.src = 'icons/android-chrome-72x72.png';
     img.className = 'center_img';
+    var loadImg = new Image();
+    loadImg.src = 'icons/android-chrome-72x72.png';
+    const draw = function(loadImg, img) {
+      var canvas = document.createElement('canvas');
+      canvas.width = loadImg.width;
+      canvas.height = loadImg.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(loadImg, 0, 0);
+      loadImg.style.display = 'none';
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var data = imageData.data;
+
+      var r = Math.floor(Math.random() * (255 - 1));
+      var g = Math.floor(Math.random() * (255 - 1));
+      var b = Math.floor(Math.random() * (255 - 1));
+      var invert = function() {
+        for (var i = 0; i < data.length; i += 4) {
+          if (data[i] >= (165 - 20) &&
+              data[i] <= (165 + 20) &&
+              data[i + 1] >= (198 - 20) &&
+              data[i + 1] <= (198 + 20) &&
+              data[i + 2] >= (61 - 20) &&
+              data[i + 2] <= (61 + 20)) {
+            data[i]     = r; // red
+            data[i + 1] = g; // green
+            data[i + 2] = b; // blue
+          }
+        }
+        ctx.putImageData(imageData, 0, 0);
+        img.src = canvas.toDataURL();
+      };
+      invert();
+    }.bind(this);
+    loadImg.onload = function() {
+      draw(loadImg, img);
+    }.bind(this);
     var title = document.createElement('center');
     titleHolder.appendChild(title);
     title.innerText = this.resource.name;
