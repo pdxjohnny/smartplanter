@@ -132,10 +132,18 @@ class PlanterCalendar extends View {
       return result;
     };
     const formatDate = function(date) {
-      return ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
+      return ('0' + date.getDate()).slice(-2) + '/' +
+        ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear();
     };
-    // TODO Find out when plant was last watered
     var today = new Date();
+    if (this.resource.value.timeStamp !== 'N/A') {
+      var lastWater = this.resource.value.timeStamp.split(' ')[1].split('-');
+      lastWater[0] = '20' + lastWater[0];
+      lastWater = [lastWater[1], lastWater[2], lastWater[0]].join('/');
+      today = new Date(lastWater);
+      console.log(lastWater, today);
+      cal.select(formatDate(today));
+    }
     if (this.resource.value.daysBetweenWaters < 1) {
       this.resource.value.daysBetweenWaters = 7;
     }
