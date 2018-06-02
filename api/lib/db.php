@@ -121,6 +121,20 @@ class Database
         return $planter;
     }
 
+    public function planter_token($user_id, $resource_id) {
+        $statement = $this->db->prepare("SELECT id FROM RESOURCES WHERE id=:resource_id AND user_id=:user_id");
+        $statement->bindValue(':resource_id', $resource_id, PDO::PARAM_INT);
+        $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+        $statement->execute();
+        if ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+          return array(
+            'id' => $resource_id,
+            'token' => $this->auth->create_planter_token($user_id, $resource_id)
+          );
+        }
+        return false;
+    }
+
     public function user_id($email) {
         $email = array(
             'email'  =>  $email,
