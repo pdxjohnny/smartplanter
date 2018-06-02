@@ -187,17 +187,17 @@ class PlanterModal extends View {
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
     const setClimate = function() {
-      for (var choice of [arid, semiarid, tropical]) {
-        choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
-      }
-      if (this.resource.value.moistureLowerBound <= 20) {
-        arid.element.className += ' mui-btn--primary';
-      } else if (this.resource.value.moistureLowerBound >= 60) {
-        tropical.element.className += ' mui-btn--primary';
-      } else {
-        semiarid.element.className += ' mui-btn--primary';
-      }
       setTimeout(function() {
+        for (var choice of [arid, semiarid, tropical]) {
+          choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
+        }
+        if (this.resource.value.moistureLowerBound <= 20) {
+          arid.element.className += ' mui-btn--primary';
+        } else if (this.resource.value.moistureLowerBound >= 60) {
+          tropical.element.className += ' mui-btn--primary';
+        } else {
+          semiarid.element.className += ' mui-btn--primary';
+        }
         this.cal.reload();
         this.resource.update(this.resource.value);
       }.bind(this), 0);
@@ -347,33 +347,30 @@ class PlanterAddModal extends View {
 class PlanterListel extends Listel {
   constructor(app, element, resource) {
     super(app, element, resource, PlanterModal);
+    this.img = new Image();
+    this.img.className = 'center_img';
+    this.createImg('icons/android-chrome-72x72.png')
+    .then(function(imgData) {
+      this.img.src = imgData;
+    }.bind(this));
   }
-  reload() {
-    var div = super.reload();
-    this.element.className = 'mui-col-xs-6';
-    div.innerHTML = '';
-    var titleHolder = document.createElement('h2');
-    titleHolder.className = 'mui--align-middle';
-    div.appendChild(titleHolder);
-    var img = new Image();
-    titleHolder.appendChild(img);
-    img.className = 'center_img';
-    var loadImg = new Image();
-    loadImg.src = 'icons/android-chrome-72x72.png';
-    const draw = function(loadImg, img) {
-      var canvas = document.createElement('canvas');
-      canvas.width = loadImg.width;
-      canvas.height = loadImg.height;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(loadImg, 0, 0);
-      loadImg.style.display = 'none';
-      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var data = imageData.data;
+  createImg(src_url) {
+    return new Promise(function(resolve, reject) {
+      var loadImg = new Image();
+      loadImg.src = src_url;
+      const draw = function(loadImg) {
+        var canvas = document.createElement('canvas');
+        canvas.width = loadImg.width;
+        canvas.height = loadImg.height;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(loadImg, 0, 0);
+        loadImg.style.display = 'none';
+        var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var data = imageData.data;
 
-      var r = Math.floor(Math.random() * (255 - 1));
-      var g = Math.floor(Math.random() * (255 - 1));
-      var b = Math.floor(Math.random() * (255 - 1));
-      var invert = function() {
+        var r = Math.floor(Math.random() * (255 - 1));
+        var g = Math.floor(Math.random() * (255 - 1));
+        var b = Math.floor(Math.random() * (255 - 1));
         for (var i = 0; i < data.length; i += 4) {
           if (data[i] >= (165 - 20) &&
               data[i] <= (165 + 20) &&
@@ -387,13 +384,24 @@ class PlanterListel extends Listel {
           }
         }
         ctx.putImageData(imageData, 0, 0);
-        img.src = canvas.toDataURL();
-      };
-      invert();
-    }.bind(this);
-    loadImg.onload = function() {
-      draw(loadImg, img);
-    }.bind(this);
+        return resolve(canvas.toDataURL());
+      }.bind(this);
+      loadImg.onload = function() {
+        setTimeout(function() {
+          draw(loadImg);
+        }.bind(this), 0);
+      }.bind(this);
+      loadImg.onerror = reject;
+    }.bind(this));
+  }
+  reload() {
+    var div = super.reload();
+    this.element.className = 'mui-col-xs-6';
+    div.innerHTML = '';
+    var titleHolder = document.createElement('h2');
+    titleHolder.className = 'mui--align-middle';
+    div.appendChild(titleHolder);
+    titleHolder.appendChild(this.img);
     var title = document.createElement('center');
     titleHolder.appendChild(title);
     title.innerText = this.resource.name;
