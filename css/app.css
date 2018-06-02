@@ -34,6 +34,12 @@ html, body {
   margin-bottom: 0px;
 }
 
+.center_img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .choosen_plant_type{
   border:1px solid lightgreen;
   border-radius:50%;

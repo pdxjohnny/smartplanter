@@ -348,7 +348,7 @@ class PlanterListel extends Listel {
     var img = new Image();
     titleHolder.appendChild(img);
     img.src = 'icons/android-chrome-72x72.png';
-    img.style = 'margin-left: auto; margin-right: auto;';
+    img.className = 'center_img';
     var title = document.createElement('center');
     titleHolder.appendChild(title);
     title.innerText = this.resource.name;
