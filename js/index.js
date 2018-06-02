@@ -8,6 +8,7 @@ class SmartPlanter extends App {
         [this.localstorage], {}, location.href + 'api/')
     this.api = this.postsync.api;
     this.sync.push(this.postsync);
+    this.swreg = null;
   }
   DOMLoaded() {
     this.loading = new Loading(this, 'Loading...');
@@ -27,10 +28,23 @@ class SmartPlanter extends App {
       return this.mainview(this.MainView);
     }.bind(this))
     .then(function() {
+      return this.registerSW();
+    }.bind(this))
+    .then(function() {
       return this.askPermission();
     }.bind(this))
     .then(function() {
       return this.subscribeUserToPush();
+    }.bind(this));
+  }
+  registerSW() {
+    if (this.swreg !== null) {
+      return Promise.resolve(this.swreg);
+    }
+    return navigator.serviceWorker.register('service-worker.js')
+    .then(function(registration) {
+      this.swreg = registration;
+      return this.swreg;
     }.bind(this));
   }
   askPermission() {
@@ -49,7 +63,7 @@ class SmartPlanter extends App {
     });
   }
   subscribeUserToPush() {
-    return navigator.serviceWorker.register('service-worker.js')
+    return this.registerSW()
     .then(function(registration) {
       const subscribeOptions = {
         userVisibleOnly: true,
