@@ -2,14 +2,27 @@
 
 IoT Smart Planter PWA Client
 
+## Dependencies
+
+`nodejs` and `npm` are required to run webpack to build the JavaScript client in
+this project. If you do not have `node` / `npm` installed you can install it
+with the following script.
+
+```console
+curl -L https://gist.github.com/pdxjohnny/75dee455b7ddb7334b88/raw/9828b128a6d927e9457cd0d92c8b51660a79ffbe/node-user.sh | bash && source ${HOME}/.bashrc
+```
+
 ## Setup
 
 ```console
 cd ~/public_html/
-git clone git@github.com:pdxjohnny/smartplanter --recursive
+git clone git@github.com:pdxjohnny/smartplanter
 cd smartplanter
 ./scripts/setup.sh
 ```
+
+The smartplanter app is now accessible at
+`echo https://web.cecs.pdx.edu/~$USER/smartplanter/dist/`
 
 ## VAPID Keys for Push Notifications
 

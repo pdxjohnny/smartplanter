@@ -2,6 +2,7 @@
 set -e
 set -x
 
+npm install
 cd dist/
 ../scripts/token-keygen
 ../scripts/composer-install
@@ -15,3 +16,5 @@ find . -type f -name \*.css -exec chmod -v 644 {} \;
 find . -type f -name \*.html -exec chmod -v 644 {} \;
 find . -type f -not -path './api/vendor/*' -name \*.php -exec chmod -v 755 {} \;
 find . -type d -not -path './api/vendor/*' -exec chmod -v 755 {} \;
+cd ..
+npm run webpack
