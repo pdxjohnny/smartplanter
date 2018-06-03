@@ -1,3 +1,5 @@
+import { Sync } from './core.js';
+
 class PlanterSync extends Sync {
   set(resource, preprocessed) {
     return new Promise(function(resolve, reject) {
@@ -39,3 +41,5 @@ class PlanterSync extends Sync {
     return bound;
   }
 }
+
+export default PlanterSync;

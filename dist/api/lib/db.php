@@ -199,7 +199,7 @@ class Database
             return false;
         }
         // Hash the password
-        $hash_options = array('cost' => 16);
+        $hash_options = array('cost' => 12);
         $user['password'] = password_hash($user['password'], PASSWORD_BCRYPT, $hash_options);
         if (
           isset($user['email']) &&

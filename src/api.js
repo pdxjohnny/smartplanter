@@ -151,3 +151,5 @@ class SmartPlanterAPI {
     }.bind(this))
   }
 }
+
+export default SmartPlanterAPI;

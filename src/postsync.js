@@ -1,3 +1,6 @@
+import { Resource, Sync } from './core.js';
+import SmartPlanterAPI from './api.js';
+
 class PostSync extends Sync {
   constructor(sync, name, pre, post, relay, meta, value) {
     super(sync, name, pre, post, relay, meta, value);
@@ -127,3 +130,5 @@ class PostSync extends Sync {
     }.bind(this);
   }
 }
+
+export default PostSync;

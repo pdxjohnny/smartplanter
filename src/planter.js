@@ -1,3 +1,7 @@
+import jsCalendar from 'simple-jscalendar';
+import { Resource, Dict } from './core.js';
+import { View, Listel, List, Input, Button } from './ui.js';
+
 class Planter extends Resource {
   constructor(sync, name, meta, value) {
     super(sync, name, 'planter', meta, value);
@@ -103,7 +107,7 @@ class PlanterDiagnostics extends View {
     center.appendChild(new Input(this.resource, 'demoFrequency',
           'Demo Frequency in seconds', 'mui-textfield', 'number').element);
     center.appendChild(document.createElement('br'));
-    appendResourceValue(this.resource, div);
+    this.appendResourceValue(this.resource, div);
     center = document.createElement('center');
     div.appendChild(center);
     center.className = 'mui--align-middle';
@@ -125,6 +129,7 @@ class PlanterCalendar extends View {
     var calEl = document.createElement('div');
     div.appendChild(calEl);
     calEl.className = 'auto-jsCalendar material-theme';
+    console.log(jsCalendar);
     var cal = jsCalendar.new(calEl);
     const addDays = function(date, days) {
       var result = new Date(date);
@@ -145,7 +150,13 @@ class PlanterCalendar extends View {
       cal.select(formatDate(today));
     }
     if (this.resource.value.daysBetweenWaters < 1) {
-      this.resource.value.daysBetweenWaters = 7;
+      if (this.resource.value.moistureLowerBound <= 20) {
+        this.resource.value.daysBetweenWaters = 14;
+      } else if (this.resource.value.moistureLowerBound >= 60) {
+        this.resource.value.daysBetweenWaters = 7;
+      } else {
+        this.resource.value.daysBetweenWaters = 10;
+      }
     }
     for (var i = 0; i < 30; i++) {
       cal.select(formatDate(addDays(today,
@@ -437,3 +448,16 @@ class PlanterList extends List {
     this.app.popup(add.element, true);
   }
 }
+
+export {
+  Planter,
+  PlanterDict,
+  PlanterAdvancedOptions,
+  PlanterDiagnostics,
+  PlanterCalendar,
+  PlanterModal,
+  PlanterSetup,
+  PlanterAddModal,
+  PlanterListel,
+  PlanterList
+};

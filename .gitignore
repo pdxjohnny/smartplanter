@@ -1,6 +1,7 @@
+node_modules/
+dist/api/vendor/
+dist/*bundle.js
+dist/keys/
 *.swp
-*.swo
-keys/token/
-*.db
-api/vendor/
-composer.phar
+*composer.phar
+dist/api/.master.db

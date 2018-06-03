@@ -111,9 +111,9 @@ curl -H "Authorization: Bearer $PTOKEN" \
 
 ## TODO
 
-- Calendar needs to predict from last watered day, now supplied by planter.
 - Push notifications (WebPush incompatibility with php 7.0 only compatible with
   7.1 and above, fork and fix)
 - Offline compatibility (All libs use fetch and the mixed content hack doesn't
   work with that)
 - UX Improvements, notification of planter received changes
+- Increase bcrypt cost to something secure
