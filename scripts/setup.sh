@@ -18,4 +18,4 @@ find . -type f -not -path './api/vendor/*' -name \*.php -exec chmod -v 755 {} \;
 find . -type d -not -path './api/vendor/*' -exec chmod -v 755 {} \;
 cd ..
 npm run webpack
-ln -s $PWD/dist/ ~/public_html/smartplanter/
+ln -s $PWD/dist ../smartplanter
