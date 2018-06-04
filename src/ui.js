@@ -236,6 +236,7 @@ class Listel extends View {
 
 class App {
   constructor(element) {
+    this.popupstatic = false;
     this.popedup = null;
     this.element = element;
     this.jsonp = new JSONProcessor();
@@ -266,11 +267,13 @@ class App {
     if (typeof isstatic === 'undefined') {
       isstatic = false;
     }
+    this.popupstatic = isstatic;
 
     modal.setAttribute('id', 'mui-overlay');
     modal.setAttribute('tabindex', '-1');
     modal.onclick = function(event) {
-      if (event.target.id === 'mui-overlay' && isstatic === false) {
+      if (event.target.id === 'mui-overlay' &&
+          this.popupstatic === false) {
         this.popdown();
       }
     }.bind(this);
@@ -282,6 +285,10 @@ class App {
       return;
     }
     document.body.removeChild(this.popedup);
+    if (typeof this.popedup.dismissed === 'function') {
+      this.popedup.dismissed();
+    }
+    this.popedup = null;
   }
   mainview(view) {
     for (var child = 0; child < this.element.children.length; ++child) {

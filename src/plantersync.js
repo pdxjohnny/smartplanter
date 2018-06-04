@@ -20,13 +20,17 @@ class PlanterSync extends Sync {
       }
     }.bind(this);
     const bound = function() {
+      if (resource.skipped) {
+        return found();
+      }
       setTimeout(function() {
         bound(resource, resolve, reject);
       }.bind(this), 5000);
       var image = new Image();
       image.onerror = function() {
-        // TODO Figure out when we need to set timeout and when the browser will
-        // automaticly request it again
+        if (resource.skipped) {
+          return found();
+        }
         setTimeout(function() {
           bound(resource, resolve, reject);
         }.bind(this), 5000);
