@@ -1,5 +1,6 @@
 class SmartPlanterAPI {
   constructor(endpoint) {
+    endpoint = endpoint.replace(/index.html\?launcher=true/g, '');
     this.endpoint = endpoint;
     this.token = undefined;
   }

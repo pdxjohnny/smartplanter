@@ -1,5 +1,7 @@
 html, body {
   /* background-color: #F0FBF7; */
+  /* Disables pull-to-refresh but allows overscroll glow effects. */
+  overscroll-behavior-y: contain;
   background-color: #FFFFFF;
   max-width: 100%;
   overflow-x: hidden;
