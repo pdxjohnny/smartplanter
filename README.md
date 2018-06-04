@@ -16,8 +16,8 @@ curl -L https://gist.github.com/pdxjohnny/75dee455b7ddb7334b88/raw/9828b128a6d92
 
 ```console
 cd ~/public_html/
-git clone git@github.com:pdxjohnny/smartplanter
-cd smartplanter
+git clone git@github.com:pdxjohnny/smartplanter smartplanterdev
+cd smartplanterdev
 ./scripts/setup.sh
 ```
 
@@ -45,8 +45,10 @@ Generated with [RealFaviconGenerator](https://realfavicongenerator.net/)
 
 ## Force HTTPS with htaccess
 
+Put this htaccess file in your public_html folder.
+
 ```console
-cat > .htaccess <<'EOF'
+cat > ~/public_html/.htaccess <<'EOF'
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
 RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
