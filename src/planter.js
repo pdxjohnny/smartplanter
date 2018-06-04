@@ -197,27 +197,27 @@ class PlanterModal extends View {
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
     const setClimate = function(update) {
-      setTimeout(function() {
-        for (var choice of [arid, semiarid, tropical]) {
-          choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
-        }
-        if (this.resource.value.moistureLowerBound <= 20) {
-          arid.element.className += ' mui-btn--primary';
-        } else if (this.resource.value.moistureLowerBound >= 60) {
-          tropical.element.className += ' mui-btn--primary';
-        } else {
-          semiarid.element.className += ' mui-btn--primary';
-        }
-        this.cal.reload();
-        if (typeof update === 'undefined' || update === true) {
+      for (var choice of [arid, semiarid, tropical]) {
+        choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
+      }
+      if (this.resource.value.moistureLowerBound <= 20) {
+        arid.element.className += ' mui-btn--primary';
+      } else if (this.resource.value.moistureLowerBound >= 60) {
+        tropical.element.className += ' mui-btn--primary';
+      } else {
+        semiarid.element.className += ' mui-btn--primary';
+      }
+      this.cal.reload();
+      if (typeof update === 'undefined' || update === true) {
+        setTimeout(function() {
           this.resource.update(this.resource.value);
-        }
-      }.bind(this), 0);
+        }.bind(this), 0);
+      }
     }.bind(this);
     const setter = function(lower, days) {
       return function(event) {
-        this.resource.value.moistureLowerBound = 60;
-        this.resource.value.daysBetweenWaters = 7;
+        this.resource.value.moistureLowerBound = lower;
+        this.resource.value.daysBetweenWaters = days;
         setClimate();
       }.bind(this);
     }.bind(this);
@@ -282,11 +282,24 @@ class PlanterSetup extends Resource {
   }
 }
 
-class PlanterAddModal extends View {
-  constructor(app, element, resource) {
-    super(app, element);
-    this.resource = resource;
+class PlanterCantAddModal extends View {
+  reload() {
+    var div = super.reload();
+    var center = document.createElement('center');
+    div.appendChild(center);
+    center.className = 'mui--align-middle';
+    var title = document.createElement('h1');
+    title.innerText = 'Cant Add Planter';
+    center.appendChild(title);
+    center.appendChild(document.createElement('br'));
+    var desc = document.createElement('p');
+    desc.innerText = 'You must be online to add a planter';
+    center.appendChild(desc);
+    return div;
   }
+}
+
+class PlanterAddModal extends View {
   reload() {
     var div = super.reload();
     div.user = this;
@@ -453,7 +466,16 @@ class PlanterList extends List {
   constructor(app, element, addButton, resource) {
     super(app, element, resource, PlanterListel, 'No Planters');
     this.addButton = addButton;
-    this.addButton.onclick = this.addPlanter.bind(this);
+    this.checkNetwork();
+    window.addEventListener('offline', this.checkNetwork.bind(this));
+    window.addEventListener('online', this.checkNetwork.bind(this));
+  }
+  checkNetwork() {
+    if (navigator.onLine) {
+      this.addButton.onclick = this.addPlanter.bind(this);
+    } else {
+      this.addButton.onclick = this.cantAddPlanter.bind(this);
+    }
   }
   reload() {
     return super.reload()
@@ -475,6 +497,11 @@ class PlanterList extends List {
         this.resource);
     add.reload();
     this.app.popup(add.element, true);
+  }
+  cantAddPlanter() {
+    var cant = new PlanterCantAddModal(this.app, document.createElement('div'));
+    cant.reload();
+    this.app.popup(cant.element);
   }
 }
 

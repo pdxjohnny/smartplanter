@@ -81,6 +81,9 @@ class PostSync extends Sync {
     return finish(this.token);
   }
   get(resource) {
+    if (!navigator.onLine) {
+      return Promise.resolve(null);
+    }
     return this.authenticated()
     .then(function() {
       return this._get(resource);
@@ -90,6 +93,9 @@ class PostSync extends Sync {
     }.bind(this));
   }
   set(resource, value) {
+    if (!navigator.onLine) {
+      return Promise.resolve(resource);
+    }
     return this.authenticated()
     .then(function() {
       return this.preprocess(resource, value);
