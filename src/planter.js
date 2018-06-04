@@ -129,7 +129,6 @@ class PlanterCalendar extends View {
     var calEl = document.createElement('div');
     div.appendChild(calEl);
     calEl.className = 'auto-jsCalendar material-theme';
-    console.log(jsCalendar);
     var cal = jsCalendar.new(calEl);
     const addDays = function(date, days) {
       var result = new Date(date);
@@ -197,7 +196,7 @@ class PlanterModal extends View {
     center.appendChild(semiarid.element);
     center.appendChild(tropical.element);
     center.appendChild(document.createElement('br'));
-    const setClimate = function() {
+    const setClimate = function(update) {
       setTimeout(function() {
         for (var choice of [arid, semiarid, tropical]) {
           choice.element.className = choice.element.className.replace(' mui-btn--primary', '');
@@ -210,25 +209,22 @@ class PlanterModal extends View {
           semiarid.element.className += ' mui-btn--primary';
         }
         this.cal.reload();
-        this.resource.update(this.resource.value);
+        if (typeof update === 'undefined' || update === true) {
+          this.resource.update(this.resource.value);
+        }
       }.bind(this), 0);
     }.bind(this);
-    arid.element.onclick = function(event) {
-      this.resource.value.moistureLowerBound = 20;
-      this.resource.value.daysBetweenWaters = 14;
-      setClimate();
+    const setter = function(lower, days) {
+      return function(event) {
+        this.resource.value.moistureLowerBound = 60;
+        this.resource.value.daysBetweenWaters = 7;
+        setClimate();
+      }.bind(this);
     }.bind(this);
-    semiarid.element.onclick = function(event) {
-      this.resource.value.moistureLowerBound = 40;
-      this.resource.value.daysBetweenWaters = 10;
-      setClimate();
-    }.bind(this);
-    tropical.element.onclick = function(event) {
-      this.resource.value.moistureLowerBound = 60;
-      this.resource.value.daysBetweenWaters = 7;
-      setClimate();
-    }.bind(this);
-    setClimate();
+    arid.element.onclick = setter(20, 14);
+    semiarid.element.onclick = setter(40, 10);
+    tropical.element.onclick = setter(60, 7);
+    setClimate(false);
     var advanced = new Button('Advanced', 'mui-btn mui-btn--raised mui-btn--primary');
     advanced.element.onclick = function(event) {
       this.element.innerHTML = '';
@@ -259,6 +255,7 @@ class PlanterModal extends View {
 class PlanterSetup extends Resource {
   constructor(sync, name, meta, value) {
     super(sync, name, 'planter.setup', meta, value);
+    this.skipped = false;
     if (typeof this.value !== 'object') {
       this.value = {
         plantername: '',
@@ -329,19 +326,34 @@ class PlanterAddModal extends View {
       }.bind(this))
       .then(function(resource) {
         this.resource.add(resource.name, resource);
+        return resource;
       }.bind(this))
-      .then(function() {
+      .then(function(resource) {
         setup.value.token = _token;
         console.log('NEXT', setup.value);
         title = document.createElement('h1');
         title.innerText = 'Connect to SmartPlanter WiFi';
         center.innerHTML = '';
         center.appendChild(title);
-        return setup.update(setup.value);
+        var skip = new Button('Skip >', 'mui-btn mui-btn--fab');
+        center.appendChild(skip.element);
+        var skiped = new Promise(function(resolve, reject) {
+          skip.element.onclick = function(event) {
+            setup.skipped = true;
+            resolve(resource);
+          }.bind(this);
+        }.bind(this));
+        var setupComplete = setup.update(setup.value)
+        .then(function() {
+          return resource;
+        }.bind(this));
+        return Promise.race([setupComplete, skiped]);
       }.bind(this))
-      .then(function() {
-        console.log('POPDOWN');
-        this.app.popdown();
+      .then(function(resource) {
+        var modal = new PlanterModal(this.app,
+              this.element, resource);
+        modal.reload();
+        this.app.popupstatic = false;
       }.bind(this));
     }.bind(this);
     center.appendChild(next.element);
