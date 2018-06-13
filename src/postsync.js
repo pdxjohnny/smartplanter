@@ -1,4 +1,4 @@
-import { Resource, Sync } from './core.js';
+import { Resource, Sync } from 'tinylib/core';
 import SmartPlanterAPI from './api.js';
 
 class PostSync extends Sync {

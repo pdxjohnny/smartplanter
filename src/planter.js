@@ -1,6 +1,6 @@
 import jsCalendar from 'simple-jscalendar';
-import { Resource, Dict } from './core.js';
-import { View, Listel, List, Input, Button } from './ui.js';
+import { Resource, Dict } from 'tinylib/core';
+import { View, Listel, List, Input, Button } from 'tinylib/ui';
 
 class Planter extends Resource {
   constructor(sync, name, meta, value) {

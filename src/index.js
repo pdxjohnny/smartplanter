@@ -1,10 +1,8 @@
-import { App, Loading, Notify } from './ui.js';
+import { App, Loading, Notify } from 'tinylib/ui';
 import PlanterSync from './plantersync.js';
 import { PlanterDict, PlanterList } from './planter.js';
 import PostSync from './postsync.js';
 import cCSS from '../node_modules/simple-jscalendar/source/jsCalendar.min.css';
-import mCSS from '../node_modules/muicss/dist/css/mui.min.css';
-import LoadingCSS from '../css/loading.css';
 import AppCSS from '../css/app.css';
 
 class SmartPlanter extends App {

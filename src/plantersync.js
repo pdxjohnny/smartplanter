@@ -1,4 +1,4 @@
-import { Sync } from './core.js';
+import { Sync } from 'tinylib/core';
 
 class PlanterSync extends Sync {
   set(resource, preprocessed) {
