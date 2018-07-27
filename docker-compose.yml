@@ -1,0 +1,28 @@
+version: '3.3'
+
+# - ./dist:/var/www/html
+services:
+
+  web:
+    build: .
+    image: how_not_to_password
+    ports:
+      - 8080:80
+    environment:
+      MYSQL_DATABASE: how_not_to_password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: wait_what_this_is_a_password
+      TOKEN_PRIVATE_KEY: /var/www/keys/token/private.pem
+      TOKEN_PUBLIC_KEY: /var/www/keys/token/public.pem
+    volumes:
+      - ./keys:/var/www/keys
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: how_not_to_password
+      MYSQL_USER: user
+      MYSQL_PASSWORD: wait_what_this_is_a_password
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - ./db.sql:/docker-entrypoint-initdb.d/dump.sql

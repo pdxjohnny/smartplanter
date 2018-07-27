@@ -5,3 +5,4 @@ dist/keys/
 *.swp
 *composer.phar
 dist/api/.master.db
+keys/
