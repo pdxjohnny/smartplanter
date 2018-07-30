@@ -27,12 +27,18 @@ RUN npm config set proxy http://proxy.jf.intel.com:911 && \
   npm config set https-proxy http://proxy.jf.intel.com:912
 COPY package.json .
 COPY package-lock.json .
-RUN npm install
+RUN npm install && \
+  mkdir dist
 
-COPY . .
-RUN npm run webpack && \
-  pwd && \
-  ls -lAF
+COPY webpack.config.js .
+COPY src ./src
+COPY css ./css
+RUN npm run webpack
 
 FROM web
 COPY --from=js /usr/src/app/dist /var/www/html
+COPY dist/icons /var/www/html/icons
+COPY dist/index.html /var/www/html/index.html
+COPY dist/manifest.json /var/www/html/manifest.json
+COPY dist/service-worker.js /var/www/html/service-worker.js
+COPY dist/api /var/www/html/api

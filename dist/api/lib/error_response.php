@@ -3,8 +3,10 @@ class ErrorResponse {
     public $code;
     public $message;
 
-    public function __construct() {
-        $this->reset_response();
+    public function __construct($code, $message) {
+        $this->code = $code;
+        $this->message = $message;
+        $this->render();
     }
 
     // Reset the error mesasge

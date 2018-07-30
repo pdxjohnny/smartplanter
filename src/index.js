@@ -30,21 +30,53 @@ class SmartPlanter extends App {
         document.getElementById('planter_list'),
         document.getElementById('planter_add'),
         this.planters);
-    return this.planters.query()
+    return window.crypto.subtle.generateKey({
+        name: 'RSASSA-PKCS1-v1_5',
+        modulusLength: 2048,
+        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),  // Equivalent to 65537,
+        hash: 'SHA-512'
+      },
+      true,
+      ['sign']
+    )
+    .then(function(key) {
+      var signThis = 'signed data here!';
+      return Promise.all([
+          Promise.resolve(signThis),
+          window.crypto.subtle.sign('RSASSA-PKCS1-v1_5', key.privateKey,
+            asciiToUint8Array(signThis)),
+          window.crypto.subtle.exportKey('spki', key.publicKey),
+      ]);
+    }.bind(this))
+    .then(function(data_signature_publicKey) {
+      var send = {
+        data: data_signature_publicKey[0],
+        signature: btoa(arrayBufferToString(data_signature_publicKey[1])),
+        publicKey: spkiToPEM(data_signature_publicKey[2])
+      };
+      console.log(send);
+      return fetch(location.origin + '/api/verify/', {
+        method: 'POST',
+        body: JSON.stringify(send)
+      });
+    }.bind(this))
+    .then(function(response) {
+      return response.text();
+    }.bind(this))
+    .then(function(text) {
+      console.log(text);
+    }.bind(this))
+    /*
+    .then(function() {
+      return this.registerSW()
+    }.bind(this))
     .then(function() {
       return this.mainview(this.MainView);
     }.bind(this))
-    .then(function() {
-      return this.registerSW();
-    }.bind(this))
-    .then(function() {
-      return this.askPermission();
-    }.bind(this))
-    .then(function() {
-      return this.subscribeUserToPush();
-    }.bind(this));
+    */
   }
   registerSW() {
+    return Promise.resolve(null);
     if (this.swreg !== null) {
       return Promise.resolve(this.swreg);
     }
@@ -54,82 +86,53 @@ class SmartPlanter extends App {
       return this.swreg;
     }.bind(this));
   }
-  askPermission() {
-    return new Promise(function(resolve, reject) {
-      const permissionResult = Notification.requestPermission(function(result) {
-        resolve(result);
-      });
-      if (permissionResult) {
-        permissionResult.then(resolve, reject);
-      }
-    })
-    .then(function(permissionResult) {
-      if (permissionResult !== 'granted') {
-        throw new Error('We weren\'t granted permission.');
-      }
-    });
-  }
-  subscribeUserToPush() {
-    return this.registerSW()
-    .then(function(registration) {
-      const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(
-          'BIKNSok_laLAfu2NBZjzt9fuqNM3bI_263bwXuIl7lhKrDaox-cxVRuRpF1xLFcvzwZ0N2_yp0a_MUT3jqC9IUc'
-        )
-      };
-
-      return registration.pushManager.subscribe(subscribeOptions);
-    }.bind(this))
-    .then(function(pushSubscription) {
-      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-      var sub = JSON.parse(JSON.stringify(pushSubscription));
-      return this.postsync.authenticated()
-      .then(function() {
-        return this.api.update_push(sub.endpoint, sub.keys.p256dh, sub.keys.auth);
-      }.bind(this))
-    }.bind(this));
-  }
-  urlBase64ToUint8Array(base64String) {
-    // From https://github.com/GoogleChromeLabs/web-push-codelab/raw/e4ad9f994c0fde1c3bd661877a7604a46e475c91/app/scripts/main.js
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-      .replace(/\-/g, '+')
-      .replace(/_/g, '/');
-
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-
-    for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-  }
 }
+
+
+function spkiToPEM(keydata){
+    var keydataS = arrayBufferToString(keydata);
+    var keydataB64 = window.btoa(keydataS);
+    var keydataB64Pem = formatAsPem(keydataB64);
+    return keydataB64Pem;
+}
+
+function arrayBufferToString( buffer ) {
+    var binary = '';
+    var bytes = new Uint8Array( buffer );
+    var len = bytes.byteLength;
+    for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+    return binary;
+}
+
+
+function formatAsPem(str) {
+    var finalString = '-----BEGIN PUBLIC KEY-----\n';
+
+    while(str.length > 0) {
+        finalString += str.substring(0, 64) + '\n';
+        str = str.substring(64);
+    }
+
+    finalString = finalString + "-----END PUBLIC KEY-----";
+
+    return finalString;
+}
+
+
+function asciiToUint8Array(str)
+{
+  var chars = [];
+  for (var i = 0; i < str.length; ++i) {
+    chars.push(str.charCodeAt(i));
+  }
+  return new Uint8Array(chars);
+}
+
 
 window.addEventListener('load', function() {
   var app = new SmartPlanter(document.getElementById('app'));
-  // TODO Remove this
   window.app = app;
   app.DOMLoaded();
 });
-
-var assets = Array.from(document.head.querySelectorAll('link')).map(function(element) {
-  return element.href.replace(location.href, '');
-}).filter(function(link) {
-  var split = link.split('/');
-  if (!split.length) {
-    return false;
-  }
-  return split[split.length - 1].indexOf('.') !== -1;
-}).concat(Array.from(document.head.querySelectorAll('script')).map(function(element) {
-  return element.src.replace(location.href, '');
-}));
-/*
-UpUp.start({
- 'cache-version': 'v0',
- 'content-url': location.href + 'index.html',
- 'service-worker-url': location.href + 'upup.sw.min.js',
- 'assets': assets
-});
-*/

@@ -1,6 +1,5 @@
 version: '3.3'
 
-# - ./dist:/var/www/html
 services:
 
   web:
@@ -9,6 +8,7 @@ services:
     ports:
       - 8080:80
     environment:
+      MYSQL_HOST: db
       MYSQL_DATABASE: how_not_to_password
       MYSQL_USER: user
       MYSQL_PASSWORD: wait_what_this_is_a_password
@@ -16,6 +16,7 @@ services:
       TOKEN_PUBLIC_KEY: /var/www/keys/token/public.pem
     volumes:
       - ./keys:/var/www/keys
+      - ./dist:/var/www/html
 
   db:
     image: mysql:5.7

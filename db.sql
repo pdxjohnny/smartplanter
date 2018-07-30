@@ -26,6 +26,7 @@ CREATE TABLE `users` (
 DROP TABLE IF EXISTS `public_keys`;
 CREATE TABLE `public_keys` (
   `user_id` INT NOT NULL,
+  `device_name` VARCHAR(128) NOT NULL,
   `key` VARCHAR(2048) NOT NULL
 );
 CREATE INDEX user_keys ON public_keys(user_id);

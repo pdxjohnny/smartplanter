@@ -8,8 +8,8 @@ class Auth
     private $publicKey;
 
     public function __construct() {
-        $TOKEN_PRIVATE_KEY = __DIR__ . '/../../keys/token/private.pem';
-        $TOKEN_PUBLIC_KEY = __DIR__ . '/../../keys/token/public.pem';
+        $TOKEN_PRIVATE_KEY = __DIR__ . '/../../../keys/token/private.pem';
+        $TOKEN_PUBLIC_KEY = __DIR__ . '/../../../keys/token/public.pem';
         $this->signer = new Lcobucci\JWT\Signer\Rsa\Sha256();
         $this->privateKey = new Lcobucci\JWT\Signer\Key('file://' . $TOKEN_PRIVATE_KEY);
         $this->publicKey = new Lcobucci\JWT\Signer\Key('file://' . $TOKEN_PUBLIC_KEY);

@@ -9,19 +9,13 @@ class Database
         $this->auth = new Auth;
         $this->db = null;
         try {
-            /*
-            $conn = 'mysql:host=' . $_ENV['DB_PORT_3306_TCP_ADDR'] .
-                    ';dbname=' . $_ENV['DB_ENV_MYSQL_DATABASE'] .
+            $conn = 'mysql:host=' . $_ENV['MYSQL_HOST'] .
+                    ';dbname=' . $_ENV['MYSQL_DATABASE'] .
                     ';charset=utf8';
             $this->db = new PDO($conn,
-                $_ENV['DB_ENV_MYSQL_USER'],
-                $_ENV['DB_ENV_MYSQL_PASSWORD']
+                $_ENV['MYSQL_USER'],
+                $_ENV['MYSQL_PASSWORD']
               );
-             */
-            // TODO Use a real database
-            $conn = 'sqlite:../.master.db';
-            $this->db = new PDO($conn);
-            chmod('../.master.db', 0600);
         } catch (Exception $err) {
             error_log("ERROR: " . $err->getMessage());
             return;
@@ -29,19 +23,15 @@ class Database
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         $this->db->setAttribute(PDO::MYSQL_ATTR_INIT_COMMAND, 'SET NAMES UTF8');
-        $this->create_tables();
     }
 
     public function table_exists($table_name)
     {
         $exists = false;
-        $statement = $this->db->prepare(
-          "SELECT name FROM sqlite_master WHERE name=:table_name");
+        $statement = $this->db->prepare("SHOW TABLES LIKE '" . $table_name . "'");
         $statement->bindValue(':table_name', $table_name, PDO::PARAM_STR);
-
         try {
             $statement->execute();
-
             if ($row = $statement->fetchAll(PDO::FETCH_ASSOC))
             {
                 $exists = true;
@@ -50,15 +40,6 @@ class Database
             error_log("ERROR: " . $err->getMessage());
         }
         return $exists;
-    }
-
-    private function create_tables() {
-        if (!$this->table_exists('USERS')) {
-            $this->db->exec("CREATE TABLE IF NOT EXISTS USERS (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, email VARCHAR(100), password VARCHAR(2000) NOT NULL, push_endpoint VARCHAR(500), push_public_key VARCHAR(500), push_auth_token VARCHAR(500))");
-        }
-        if (!$this->table_exists('RESOURCES')) {
-            $this->db->exec("CREATE TABLE IF NOT EXISTS RESOURCES (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, data BLOB, FOREIGN KEY(user_id) REFERENCES USERS(id))");
-        }
     }
 
     public function update_push($user_id, $endpoint, $public_key, $auth_token) {
